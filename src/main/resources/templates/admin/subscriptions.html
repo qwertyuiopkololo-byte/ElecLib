@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Подписки — Админ</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+<main class="main">
+    <h1>Подписки</h1>
+    <div th:if="${message}" class="alert success" th:text="${message}"></div>
+    <p><a th:href="@{/admin}" class="btn secondary">← Назад</a></p>
+    <table>
+        <thead><tr><th>ID</th><th>Пользователь</th><th>Начало</th><th>Конец</th><th>Статус</th></tr></thead>
+        <tbody>
+            <tr th:each="s : ${subscriptions}">
+                <td th:text="${s.subscriptionId}">-</td>
+                <td th:text="${userLoginMap.get(s.userId)}">-</td>
+                <td th:text="${s.startDate}">-</td>
+                <td th:text="${s.endDate}">-</td>
+                <td th:text="${s.status}">-</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>Активировать подписку вручную</h2>
+    <form th:action="@{/admin/subscriptions/activate}" method="post">
+        <label>User ID</label>
+        <input type="number" name="userId" required/>
+        <label>Месяцев</label>
+        <input type="number" name="months" value="1" min="1"/>
+        <button type="submit" class="btn">Активировать</button>
+    </form>
+</main>
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

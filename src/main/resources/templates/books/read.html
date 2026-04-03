@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${book.title}">Чтение</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body class="reader-page">
+<script>document.body.setAttribute('data-reader-theme', localStorage.getItem('readerTheme') || 'light');</script>
+<div th:replace="~{fragments/header}"></div>
+<main class="main reader-container">
+    <div id="readerView" class="reader-view">
+        <p><a th:href="@{/books/{id}(id=${book.bookId})}" class="btn secondary">← К книге</a></p>
+        <h1 th:text="${book.title}">Title</h1>
+
+        <div class="reader-nav reader-nav-top">
+            <button type="button" class="btn small" id="btnPrev" disabled>← Предыдущая</button>
+            <span class="reader-page-info">Страница <input type="number" id="pageInput" min="1" value="1" /> из <span id="totalPages">1</span></span>
+            <button type="button" class="btn small" id="btnGo">Перейти</button>
+            <button type="button" class="btn small" id="btnNext">Следующая →</button>
+            <button type="button" class="btn small" id="btnToggleBookmarks" title="Показать/скрыть закладки">Закладки</button>
+            <button type="button" class="btn small" id="btnToggleNotes" title="Показать/скрыть заметки">Заметки</button>
+            <button type="button" class="btn small" id="btnToggleReaderSettings" title="Настройки оформления">Оформление</button>
+            <form th:if="${inFavorites}" th:action="@{/books/{id}/favorite(id=${book.bookId})}" method="post" class="reader-fav-form" style="display:inline;">
+                <input type="hidden" name="add" value="0"/>
+                <input type="hidden" name="returnTo" value="read"/>
+                <button type="submit" class="btn small secondary">Убрать из избранного</button>
+            </form>
+            <form th:if="${!inFavorites}" th:action="@{/books/{id}/favorite(id=${book.bookId})}" method="post" class="reader-fav-form" style="display:inline;">
+                <input type="hidden" name="add" value="1"/>
+                <input type="hidden" name="returnTo" value="read"/>
+                <button type="submit" class="btn small">В избранное</button>
+            </form>
+        </div>
+
+        <div class="reader-bookmarks reader-bookmarks-panel" id="readerBookmarks" aria-hidden="true">
+            <h3>Закладки</h3>
+            <button type="button" class="btn small" id="btnAddBookmark">Добавить закладку на текущей странице</button>
+            <ul id="bookmarksList" class="bookmarks-list">
+                <li th:each="bm : ${bookMarks}" class="bookmark-item"
+                    th:attr="data-id=${bm.id}, data-page=${bm.pageNumber}, data-title=${bm.title != null ? bm.title : ''}">
+                    <span class="bm-page" th:text="${bm.title != null and not #strings.isEmpty(bm.title) ? bm.title + ' (стр. ' + bm.pageNumber + ')' : ('Стр. ' + bm.pageNumber)}">Стр. 1</span>
+                    <button type="button" class="btn small bm-go">Перейти</button>
+                    <button type="button" class="btn small bm-rename">Переименовать</button>
+                    <button type="button" class="btn small danger bm-del">Удалить</button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="reader-notes reader-notes-panel" id="readerNotes" aria-hidden="true">
+            <h3>Заметки</h3>
+            <button type="button" class="btn small" id="btnAddNote">Создать заметку из выделения</button>
+            <p class="reader-notes-hint">Выделите фрагмент текста на странице и нажмите кнопку.</p>
+            <ul id="notesList" class="notes-list">
+                <li th:each="n : ${readingNotes}" class="note-item"
+                    th:attr="data-id=${n.id}, data-page=${n.pageNumber}, data-quote=${n.quoteText}, data-title=${n.title != null ? n.title : ''}">
+                    <span class="note-title"
+                          th:text="${n.title != null and not #strings.isEmpty(n.title) ? n.title + ' (стр. ' + n.pageNumber + ')' : ('Заметка (стр. ' + n.pageNumber + ')')}">Заметка (стр. 1)</span>
+                    <button type="button" class="btn small note-go">Перейти</button>
+                    <button type="button" class="btn small note-rename">Переименовать</button>
+                    <button type="button" class="btn small danger note-del">Удалить</button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="reader-settings reader-settings-panel" id="readerSettings" aria-hidden="true">
+            <h3>Оформление</h3>
+            <div class="reader-setting-group">
+                <label>Тема:</label>
+                <div class="reader-option-btns" role="group" aria-label="Тема">
+                    <button type="button" class="btn small reader-opt" data-setting="theme" data-value="light">Светлая</button>
+                    <button type="button" class="btn small reader-opt" data-setting="theme" data-value="dark">Тёмная</button>
+                    <button type="button" class="btn small reader-opt" data-setting="theme" data-value="sepia">Сепия</button>
+                </div>
+            </div>
+            <div class="reader-setting-group">
+                <label>Шрифт:</label>
+                <select id="readerFontSelect" class="reader-select" aria-label="Шрифт">
+                    <option value="system">Системный</option>
+                    <option value="georgia">Georgia</option>
+                    <option value="times">Times New Roman</option>
+                    <option value="palatino">Palatino</option>
+                    <option value="verdana">Verdana</option>
+                </select>
+            </div>
+            <div class="reader-setting-group">
+                <label>Размер шрифта:</label>
+                <div class="reader-option-btns" role="group" aria-label="Размер">
+                    <button type="button" class="btn small reader-opt" data-setting="size" data-value="small">Мелкий</button>
+                    <button type="button" class="btn small reader-opt" data-setting="size" data-value="medium">Средний</button>
+                    <button type="button" class="btn small reader-opt" data-setting="size" data-value="large">Крупный</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="readerContent" class="reader-content"></div>
+
+        <div class="reader-nav reader-nav-bottom">
+            <button type="button" class="btn small" id="btnPrev2" disabled>← Предыдущая</button>
+            <span class="reader-page-info">Страница <input type="number" id="pageInput2" min="1" value="1" /> из <span id="totalPages2">1</span></span>
+            <button type="button" class="btn small" id="btnGo2">Перейти</button>
+            <button type="button" class="btn small" id="btnNext2">Следующая →</button>
+        </div>
+    </div>
+</main>
+
+<textarea id="fullTextSource" style="display:none" th:text="${book.text}"></textarea>
+<div id="readerConfig" style="display:none"
+     th:attr="data-save-url=@{/books/{id}/reading-position(id=${book.bookId})},
+              data-initial-page=${lastPage},
+              data-bookmarks-add-url=@{/books/{id}/bookmarks(id=${book.bookId})},
+              data-bookmarks-delete-url=@{/books/{id}/bookmarks/delete(id=${book.bookId})},
+              data-bookmarks-rename-url=@{/books/{id}/bookmarks/rename(id=${book.bookId})},
+              data-notes-add-url=@{/books/{id}/notes(id=${book.bookId})},
+              data-notes-rename-url=@{/books/{id}/notes/rename(id=${book.bookId})},
+              data-notes-delete-url=@{/books/{id}/notes/delete(id=${book.bookId})},
+              data-csrf-param=${_csrf.parameterName},
+              data-csrf-token=${_csrf.token}"></div>
+
+<div th:replace="~{fragments/footer}"></div>
+<script th:inline="javascript">
+(function() {
+    var CHARS_PER_PAGE = 2500;
+    var fullText = document.getElementById('fullTextSource').value || '';
+    var pages = [];
+    var currentPage = 1;
+    var config = document.getElementById('readerConfig');
+    var saveUrl = config ? config.getAttribute('data-save-url') : '';
+    var initialPage = config && config.getAttribute('data-initial-page') ? parseInt(config.getAttribute('data-initial-page'), 10) : 0;
+    var bookmarksAddUrl = config ? config.getAttribute('data-bookmarks-add-url') : '';
+    var bookmarksDeleteUrl = config ? config.getAttribute('data-bookmarks-delete-url') : '';
+    var bookmarksRenameUrl = config ? config.getAttribute('data-bookmarks-rename-url') : '';
+    var notesAddUrl = config ? config.getAttribute('data-notes-add-url') : '';
+    var notesRenameUrl = config ? config.getAttribute('data-notes-rename-url') : '';
+    var notesDeleteUrl = config ? config.getAttribute('data-notes-delete-url') : '';
+    var csrfParam = config ? config.getAttribute('data-csrf-param') : '_csrf';
+    var csrfToken = config ? config.getAttribute('data-csrf-token') : '';
+
+    var READER_STORAGE = { theme: 'readerTheme', font: 'readerFont', size: 'readerFontSize' };
+
+    function getReaderSettings() {
+        return {
+            theme: localStorage.getItem(READER_STORAGE.theme) || 'light',
+            font: localStorage.getItem(READER_STORAGE.font) || 'system',
+            size: localStorage.getItem(READER_STORAGE.size) || 'medium'
+        };
+    }
+    function applyReaderSettings(s) {
+        var view = document.getElementById('readerView');
+        if (view) {
+            view.setAttribute('data-theme', s.theme);
+            view.setAttribute('data-font', s.font);
+            view.setAttribute('data-size', s.size);
+        }
+        document.body.setAttribute('data-reader-theme', s.theme);
+    }
+    function saveReaderSetting(key, value) {
+        if (key === 'theme') localStorage.setItem(READER_STORAGE.theme, value);
+        if (key === 'font') localStorage.setItem(READER_STORAGE.font, value);
+        if (key === 'size') localStorage.setItem(READER_STORAGE.size, value);
+    }
+    function updateReaderSettingsUI(s) {
+        document.querySelectorAll('.reader-opt[data-setting="theme"]').forEach(function(btn) {
+            btn.classList.toggle('active', btn.getAttribute('data-value') === s.theme);
+        });
+        document.querySelectorAll('.reader-opt[data-setting="size"]').forEach(function(btn) {
+            btn.classList.toggle('active', btn.getAttribute('data-value') === s.size);
+        });
+        var fontSelect = document.getElementById('readerFontSelect');
+        if (fontSelect) fontSelect.value = s.font;
+    }
+
+    function splitIntoPages(text) {
+        if (!text || !text.trim()) return [''];
+        var result = [];
+        var pos = 0;
+        while (pos < text.length) {
+            var end = Math.min(pos + CHARS_PER_PAGE, text.length);
+            var chunk = text.slice(pos, end);
+            if (end < text.length) {
+                var lastSpace = chunk.lastIndexOf(' ');
+                var lastNewline = chunk.lastIndexOf('\n');
+                var breakAt = Math.max(lastSpace, lastNewline);
+                if (breakAt > CHARS_PER_PAGE / 2) {
+                    chunk = chunk.slice(0, breakAt + 1);
+                    end = pos + breakAt + 1;
+                }
+            }
+            result.push(chunk);
+            pos = end;
+        }
+        return result;
+    }
+
+    function escapeHtml(s) {
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/\"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function getNotesOnPage(pageNum) {
+        var list = document.getElementById('notesList');
+        if (!list) return [];
+        var items = Array.from(list.querySelectorAll('.note-item'));
+        return items
+            .map(function(li) {
+                return {
+                    id: li.getAttribute('data-id'),
+                    page: parseInt(li.getAttribute('data-page'), 10),
+                    quote: li.getAttribute('data-quote') || ''
+                };
+            })
+            .filter(function(n) { return n.page === pageNum && n.quote && n.quote.trim(); });
+    }
+
+    function buildHighlightedHtml(plainText, notesOnPage) {
+        if (!notesOnPage || notesOnPage.length === 0) return escapeHtml(plainText);
+        var ranges = [];
+        notesOnPage.forEach(function(n) {
+            var q = (n.quote || '').trim();
+            if (!q) return;
+            var idx = plainText.indexOf(q);
+            if (idx < 0) return;
+            ranges.push({ start: idx, end: idx + q.length, id: n.id });
+        });
+        if (ranges.length === 0) return escapeHtml(plainText);
+        ranges.sort(function(a, b) { return a.start - b.start; });
+        var merged = [];
+        ranges.forEach(function(r) {
+            var last = merged.length ? merged[merged.length - 1] : null;
+            if (!last || r.start >= last.end) merged.push(r);
+        });
+        var out = '';
+        var pos = 0;
+        merged.forEach(function(r) {
+            out += escapeHtml(plainText.slice(pos, r.start));
+            out += '<span class="note-highlight" data-note-id="' + escapeHtml(r.id) + '">' +
+                escapeHtml(plainText.slice(r.start, r.end)) + '</span>';
+            pos = r.end;
+        });
+        out += escapeHtml(plainText.slice(pos));
+        return out;
+    }
+
+    function renderReaderPage() {
+        var text = pages[currentPage - 1] || '';
+        var notesOnPage = getNotesOnPage(currentPage);
+        document.getElementById('readerContent').innerHTML = buildHighlightedHtml(text, notesOnPage);
+    }
+
+    function updateUI() {
+        var total = pages.length;
+        document.getElementById('totalPages').textContent = total;
+        document.getElementById('totalPages2').textContent = total;
+        document.getElementById('pageInput').value = currentPage;
+        document.getElementById('pageInput').max = total;
+        document.getElementById('pageInput2').value = currentPage;
+        document.getElementById('pageInput2').max = total;
+
+        renderReaderPage();
+
+        document.getElementById('btnPrev').disabled = currentPage <= 1;
+        document.getElementById('btnPrev2').disabled = currentPage <= 1;
+        document.getElementById('btnNext').disabled = currentPage >= total;
+        document.getElementById('btnNext2').disabled = currentPage >= total;
+
+        if (location.hash !== '#page=' + currentPage) {
+            location.replace('#page=' + currentPage);
+        }
+    }
+
+    function savePosition() {
+        if (!saveUrl || currentPage < 1) return;
+        var url = saveUrl + '?page=' + currentPage + '&' + csrfParam + '=' + encodeURIComponent(csrfToken);
+        navigator.sendBeacon ? navigator.sendBeacon(url) : (function() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', url, false);
+            xhr.send();
+        })();
+    }
+
+    function goToPage(num) {
+        var n = parseInt(num, 10);
+        if (n >= 1 && n <= pages.length) {
+            currentPage = n;
+            updateUI();
+            document.getElementById('readerContent').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            savePosition();
+        }
+    }
+
+    function bookmarkLabelText(title, pageNum) {
+        var t = title != null ? String(title).trim() : '';
+        return t ? t + ' (стр. ' + pageNum + ')' : 'Стр. ' + pageNum;
+    }
+    function setBookmarkItemLabel(li, title, pageNum) {
+        li.setAttribute('data-title', title != null ? String(title).trim() : '');
+        var span = li.querySelector('.bm-page');
+        if (span) span.textContent = bookmarkLabelText(title, pageNum);
+    }
+
+    function renameBookmarkItem(li) {
+        if (!bookmarksRenameUrl) return;
+        var id = li.getAttribute('data-id');
+        var currentTitle = li.getAttribute('data-title') || '';
+        var newTitle = window.prompt('Название закладки (пусто — только номер страницы):', currentTitle);
+        if (newTitle === null) return;
+        var url = bookmarksRenameUrl + '?bookmarkId=' + id + '&title=' + encodeURIComponent(newTitle) + '&' + csrfParam + '=' + encodeURIComponent(csrfToken);
+        fetch(url, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function(r) { return r.text().then(function(t) { return { ok: r.ok, t: t }; }); })
+            .then(function(x) {
+                if (!x.ok || !x.t) return;
+                var bm = JSON.parse(x.t);
+                if (bm && bm.pageNumber) {
+                    if (bm.id) li.setAttribute('data-id', bm.id);
+                    setBookmarkItemLabel(li, bm.title, bm.pageNumber);
+                }
+            });
+    }
+
+    function deleteBookmark(bookmarkId, liEl) {
+        if (!bookmarksDeleteUrl) return;
+        var url = bookmarksDeleteUrl + '?bookmarkId=' + bookmarkId + '&' + csrfParam + '=' + encodeURIComponent(csrfToken);
+        fetch(url, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function() { if (liEl && liEl.parentNode) liEl.parentNode.removeChild(liEl); });
+    }
+
+    function addBookmarkNode(id, pageNum, title) {
+        var ul = document.getElementById('bookmarksList');
+        var li = document.createElement('li');
+        li.className = 'bookmark-item';
+        li.setAttribute('data-id', id);
+        li.setAttribute('data-page', pageNum);
+        li.setAttribute('data-title', title != null ? String(title).trim() : '');
+        li.innerHTML = '<span class="bm-page">' + escapeHtml(bookmarkLabelText(title, pageNum)) + '</span> ' +
+            '<button type="button" class="btn small bm-go">Перейти</button> ' +
+            '<button type="button" class="btn small bm-rename">Переименовать</button> ' +
+            '<button type="button" class="btn small danger bm-del">Удалить</button>';
+        ul.appendChild(li);
+    }
+
+    function noteLabelText(title, pageNum) {
+        var t = title != null ? String(title).trim() : '';
+        return (t ? t : 'Заметка') + ' (стр. ' + pageNum + ')';
+    }
+    function setNoteItemLabel(li, title, pageNum) {
+        li.setAttribute('data-title', title != null ? String(title).trim() : '');
+        var span = li.querySelector('.note-title');
+        if (span) span.textContent = noteLabelText(title, pageNum);
+    }
+    function addNoteNode(id, pageNum, quote, title) {
+        var ul = document.getElementById('notesList');
+        var li = document.createElement('li');
+        li.className = 'note-item';
+        li.setAttribute('data-id', id);
+        li.setAttribute('data-page', pageNum);
+        li.setAttribute('data-quote', quote != null ? String(quote) : '');
+        li.setAttribute('data-title', title != null ? String(title).trim() : '');
+        li.innerHTML = '<span class="note-title">' + escapeHtml(noteLabelText(title, pageNum)) + '</span> ' +
+            '<button type="button" class="btn small note-go">Перейти</button> ' +
+            '<button type="button" class="btn small note-rename">Переименовать</button> ' +
+            '<button type="button" class="btn small danger note-del">Удалить</button>';
+        ul.appendChild(li);
+    }
+    function renameNoteItem(li) {
+        if (!notesRenameUrl) return;
+        var id = li.getAttribute('data-id');
+        var currentTitle = li.getAttribute('data-title') || '';
+        var newTitle = window.prompt('Название заметки:', currentTitle);
+        if (newTitle === null) return;
+        var url = notesRenameUrl + '?noteId=' + id + '&title=' + encodeURIComponent(newTitle) + '&' + csrfParam + '=' + encodeURIComponent(csrfToken);
+        fetch(url, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function(r) { return r.text().then(function(t) { return { ok: r.ok, t: t }; }); })
+            .then(function(x) {
+                if (!x.ok || !x.t) return;
+                var n = JSON.parse(x.t);
+                if (n && n.pageNumber) {
+                    if (n.id) li.setAttribute('data-id', n.id);
+                    setNoteItemLabel(li, n.title, n.pageNumber);
+                    renderReaderPage();
+                }
+            });
+    }
+    function deleteNote(noteId, liEl) {
+        if (!notesDeleteUrl) return;
+        var url = notesDeleteUrl + '?noteId=' + noteId + '&' + csrfParam + '=' + encodeURIComponent(csrfToken);
+        fetch(url, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function() {
+                if (liEl && liEl.parentNode) liEl.parentNode.removeChild(liEl);
+                renderReaderPage();
+            });
+    }
+    function goToNoteHighlight(noteId) {
+        var el = document.querySelector('.note-highlight[data-note-id="' + String(noteId).replace(/\"/g, '') + '"]');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function init() {
+        pages = splitIntoPages(fullText);
+        if (pages.length === 0) pages = [''];
+        var hash = location.hash.match(/#page=(\d+)/);
+        if (hash) {
+            var p = parseInt(hash[1], 10);
+            if (p >= 1 && p <= pages.length) currentPage = p;
+        } else if (initialPage >= 1 && initialPage <= pages.length) {
+            currentPage = initialPage;
+        }
+        updateUI();
+        window.addEventListener('beforeunload', savePosition);
+
+        var readerSettings = getReaderSettings();
+        applyReaderSettings(readerSettings);
+        updateReaderSettingsUI(readerSettings);
+
+        document.getElementById('btnToggleReaderSettings').onclick = function() {
+            var panel = document.getElementById('readerSettings');
+            var hidden = panel.getAttribute('aria-hidden') === 'true';
+            panel.setAttribute('aria-hidden', hidden ? 'false' : 'true');
+        };
+        document.querySelectorAll('.reader-opt').forEach(function(btn) {
+            btn.onclick = function() {
+                var key = btn.getAttribute('data-setting');
+                var value = btn.getAttribute('data-value');
+                saveReaderSetting(key, value);
+                var s = getReaderSettings();
+                if (key === 'theme') s.theme = value;
+                if (key === 'size') s.size = value;
+                applyReaderSettings(s);
+                updateReaderSettingsUI(s);
+            };
+        });
+        var fontSelect = document.getElementById('readerFontSelect');
+        if (fontSelect) {
+            fontSelect.onchange = function() {
+                var value = this.value;
+                saveReaderSetting('font', value);
+                var s = getReaderSettings();
+                s.font = value;
+                applyReaderSettings(s);
+                updateReaderSettingsUI(s);
+            };
+        }
+
+        document.getElementById('btnPrev').onclick = function() { goToPage(currentPage - 1); };
+        document.getElementById('btnPrev2').onclick = function() { goToPage(currentPage - 1); };
+        document.getElementById('btnNext').onclick = function() { goToPage(currentPage + 1); };
+        document.getElementById('btnNext2').onclick = function() { goToPage(currentPage + 1); };
+        document.getElementById('btnGo').onclick = function() { goToPage(document.getElementById('pageInput').value); };
+        document.getElementById('btnGo2').onclick = function() { goToPage(document.getElementById('pageInput2').value); };
+        document.getElementById('pageInput').onkeydown = function(e) { if (e.key === 'Enter') { e.preventDefault(); goToPage(this.value); } };
+        document.getElementById('pageInput2').onkeydown = function(e) { if (e.key === 'Enter') { e.preventDefault(); goToPage(this.value); } };
+
+        document.getElementById('btnToggleBookmarks').onclick = function() {
+            var panel = document.getElementById('readerBookmarks');
+            var hidden = panel.getAttribute('aria-hidden') === 'true';
+            panel.setAttribute('aria-hidden', hidden ? 'false' : 'true');
+        };
+        document.getElementById('btnToggleNotes').onclick = function() {
+            var panel = document.getElementById('readerNotes');
+            var hidden = panel.getAttribute('aria-hidden') === 'true';
+            panel.setAttribute('aria-hidden', hidden ? 'false' : 'true');
+        };
+
+        document.getElementById('btnAddBookmark').onclick = function() {
+            if (!bookmarksAddUrl || currentPage < 1) return;
+            var title = window.prompt('Название закладки (необязательно, в списке будет «название (стр. N)»):', '');
+            if (title === null) return;
+            var url = bookmarksAddUrl + '?page=' + currentPage + '&' + csrfParam + '=' + encodeURIComponent(csrfToken);
+            if (title.trim()) url += '&title=' + encodeURIComponent(title.trim());
+            fetch(url, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(function(r) { return r.text(); })
+                .then(function(t) {
+                    if (!t) return;
+                    var bm = JSON.parse(t);
+                    if (bm && bm.id && bm.pageNumber) addBookmarkNode(bm.id, bm.pageNumber, bm.title);
+                });
+        };
+
+        document.getElementById('btnAddNote').onclick = function() {
+            if (!notesAddUrl || currentPage < 1) return;
+            var sel = window.getSelection ? window.getSelection().toString() : '';
+            var quote = (sel || '').trim();
+            if (!quote) { alert('Сначала выделите фрагмент текста на странице.'); return; }
+            var defaultTitle = quote.length > 24 ? (quote.slice(0, 24) + '…') : quote;
+            var title = window.prompt('Название заметки (необязательно):', defaultTitle);
+            if (title === null) return;
+            var url = notesAddUrl + '?page=' + currentPage + '&quote=' + encodeURIComponent(quote) + '&' + csrfParam + '=' + encodeURIComponent(csrfToken);
+            if (title.trim()) url += '&title=' + encodeURIComponent(title.trim());
+            fetch(url, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(function(r) { return r.text(); })
+                .then(function(t) {
+                    if (!t) return;
+                    var n = JSON.parse(t);
+                    if (n && n.id && n.pageNumber) {
+                        addNoteNode(n.id, n.pageNumber, n.quoteText, n.title);
+                        renderReaderPage();
+                    }
+                });
+        };
+
+        document.getElementById('bookmarksList').addEventListener('click', function(e) {
+            var li = e.target.closest('.bookmark-item');
+            if (!li) return;
+            if (e.target.classList.contains('bm-go')) goToPage(li.getAttribute('data-page'));
+            if (e.target.classList.contains('bm-rename')) renameBookmarkItem(li);
+            if (e.target.classList.contains('bm-del')) deleteBookmark(li.getAttribute('data-id'), li);
+        });
+        document.getElementById('notesList').addEventListener('click', function(e) {
+            var li = e.target.closest('.note-item');
+            if (!li) return;
+            if (e.target.classList.contains('note-go')) {
+                var page = li.getAttribute('data-page');
+                var id = li.getAttribute('data-id');
+                goToPage(page);
+                setTimeout(function() { goToNoteHighlight(id); }, 50);
+            }
+            if (e.target.classList.contains('note-rename')) renameNoteItem(li);
+            if (e.target.classList.contains('note-del')) deleteNote(li.getAttribute('data-id'), li);
+        });
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+})();
+</script>
+</body>
+</html>

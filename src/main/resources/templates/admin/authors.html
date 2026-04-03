@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Авторы — Админ</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+<main class="main">
+    <h1>Авторы</h1>
+    <div th:if="${message}" class="alert success" th:text="${message}"></div>
+    <p><a th:href="@{/admin}" class="btn secondary">← Назад</a> <a th:href="@{/admin/authors/new}" class="btn">Добавить автора</a></p>
+    <table>
+        <thead><tr><th>ID</th><th>Имя</th><th>Фамилия</th><th>Действия</th></tr></thead>
+        <tbody>
+            <tr th:each="a : ${authors}">
+                <td th:text="${a.authorId}">-</td>
+                <td th:text="${a.firstName}">-</td>
+                <td th:text="${a.lastName}">-</td>
+                <td><a th:href="@{/admin/authors/edit/{id}(id=${a.authorId})}">Изменить</a></td>
+            </tr>
+        </tbody>
+    </table>
+</main>
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

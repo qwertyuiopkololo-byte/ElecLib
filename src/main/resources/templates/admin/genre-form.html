@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Жанр — Админ</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+<main class="main">
+    <h1 th:text="${genre.genreId != null ? 'Редактировать жанр' : 'Новый жанр'}">Жанр</h1>
+    <p><a th:href="@{/admin/genres}" class="btn secondary">← Назад</a></p>
+    <form th:action="@{/admin/genres}" th:object="${genre}" method="post">
+        <input type="hidden" th:field="*{genreId}"/>
+        <label>Название</label>
+        <input type="text" th:field="*{name}" required/>
+        <button type="submit">Сохранить</button>
+    </form>
+</main>
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

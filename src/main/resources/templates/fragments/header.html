@@ -1,0 +1,19 @@
+<header class="header" xmlns:th="http://www.thymeleaf.org">
+    <a th:href="@{/books}" class="logo">Электронная библиотека</a>
+    <nav th:if="${user != null}">
+        <a th:href="@{/books}">Книги</a>
+        <a th:href="@{/genres}">Жанры</a>
+        <a th:href="@{/favorites}">Избранное</a>
+        <a th:href="@{/subscription}">Подписка</a>
+        <th:block th:if="${user != null and user.admin}">
+            <a th:href="@{/admin}">Админ</a>
+        </th:block>
+        <form th:action="@{/logout}" method="post" class="inline">
+            <button type="submit">Выйти</button>
+        </form>
+    </nav>
+    <nav th:if="${user == null}">
+        <a th:href="@{/login}" href="/login">Вход</a>
+        <a th:href="@{/register}" href="/register">Регистрация</a>
+    </nav>
+</header>

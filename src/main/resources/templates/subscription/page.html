@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Подписка — ElecLib</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+<main class="main">
+    <h1>Подписка</h1>
+    <div th:if="${required}" class="alert error">Для чтения этой книги нужна активная подписка.</div>
+    <div th:if="${error}" class="alert error" th:text="${error}"></div>
+    <div th:if="${message}" class="alert success" th:text="${message}"></div>
+    <div th:if="${hasSubscription}" class="alert success">У вас активная подписка. Доступ к большинству книг открыт.</div>
+    <div class="subscription-box" th:if="${!hasSubscription}">
+        <h2>Оформить подписку</h2>
+        <p>Одна подписка открывает доступ к большинству книг в библиотеке.</p>
+        <div class="qr">
+            <img th:src="'data:image/png;base64,' + ${qrCodeBase64}" alt="QR для оплаты" width="200" height="200"/>
+        </div>
+        <p class="note">После оплаты нажмите кнопку ниже для активации подписки.</p>
+        <form th:action="@{/subscription/activate}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="btn">Активировать подписку</button>
+        </form>
+    </div>
+    <section th:if="${!#lists.isEmpty(subscriptions)}">
+        <h2>История подписок</h2>
+        <table>
+            <tr><th>Начало</th><th>Конец</th><th>Статус</th></tr>
+            <tr th:each="s : ${subscriptions}">
+                <td th:text="${s.startDate}">-</td>
+                <td th:text="${s.endDate}">-</td>
+                <td th:text="${s.status}">-</td>
+            </tr>
+        </table>
+    </section>
+</main>
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>
