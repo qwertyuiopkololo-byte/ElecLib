@@ -145,14 +145,12 @@ body.reader-page[data-reader-theme="light"] .note-highlight { background: rgba(5
 body.reader-page[data-reader-theme="dark"] .note-highlight { background: rgba(126, 184, 218, 0.18); }
 body.reader-page[data-reader-theme="sepia"] .note-highlight { background: rgba(139, 115, 85, 0.18); }
 
-/* Unify action button sizes inside cards and book detail */
 .card-actions .btn { display: inline-flex; align-items: center; justify-content: center; line-height: 1; min-height: 40px; }
 .book-detail .btn { display: inline-flex; align-items: center; justify-content: center; line-height: 1; min-height: 40px; }
 .book-detail form .btn { display: inline-flex; align-items: center; justify-content: center; line-height: 1; min-height: 40px; }
 .book-actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 .book-actions form { margin: 0; }
 
-/* Review submit button under textarea */
 .review-form button[type="submit"] { display: block; width: 100%; max-width: 320px; margin-top: 0.25rem; }
 
 .subscription-box { background: #fff; border-radius: 8px; padding: 1.5rem; max-width: 400px; margin: 1rem 0; border: 1px solid #eee; }

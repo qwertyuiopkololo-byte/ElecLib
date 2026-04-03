@@ -8,9 +8,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-/**
- * Обработка необработанных исключений — показываем страницу ошибки вместо Whitelabel.
- */
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
