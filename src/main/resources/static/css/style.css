@@ -1,0 +1,169 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f3ef; color: #1a1a1a; line-height: 1.5; }
+.header { background: #2c3e50; color: #ecf0f1; padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.header a { color: #ecf0f1; text-decoration: none; margin-right: 1rem; cursor: pointer; display: inline-block; padding: 0.25em 0; }
+.header a:hover { text-decoration: underline; }
+.header nav a { min-height: 1.5em; }
+.logo { font-weight: bold; font-size: 1.25rem; }
+.header form.inline { display: inline; margin: 0; }
+.header button { background: transparent; border: 1px solid #ecf0f1; color: #ecf0f1; padding: 0.35rem 0.75rem; cursor: pointer; border-radius: 4px; }
+.header button:hover { background: #34495e; }
+.main { max-width: 960px; margin: 0 auto; padding: 1.5rem; min-height: 60vh; }
+.footer { text-align: center; padding: 1rem; color: #7f8c8d; font-size: 0.9rem; border-top: 1px solid #ddd; margin-top: 2rem; }
+
+.alert { padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1rem; }
+.alert.success { background: #d4edda; color: #155724; }
+.alert.error { background: #f8d7da; color: #721c24; }
+
+h1, h2 { margin-top: 0; color: #2c3e50; }
+form label { display: block; margin-bottom: 0.25rem; font-weight: 500; }
+form input[type="text"], form input[type="password"], form input[type="number"], form textarea { width: 100%; max-width: 320px; padding: 0.5rem; margin-bottom: 0.75rem; border: 1px solid #bdc3c7; border-radius: 4px; }
+.password-wrap { position: relative; display: inline-block; max-width: 320px; width: 100%; margin-bottom: 0.75rem; }
+.password-wrap input { margin-bottom: 0; padding-right: 2.5rem; max-width: none; width: 100%; }
+.password-toggle { position: absolute; right: 4px; top: 40%; transform: translateY(-55%); padding: 0.35rem; border: none; background: none; cursor: pointer; color: #7f8c8d; border-radius: 4px; line-height: 0; }
+.password-toggle:hover { color: #2c3e50; background: #eee; }
+.password-toggle svg { width: 20px; height: 20px; display: block; }
+form textarea { min-height: 80px; }
+form button[type="submit"], .btn { padding: 0.5rem 1rem; background: #3498db; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+form button[type="submit"]:hover, .btn:hover { background: #2980b9; }
+.btn.secondary { background: #95a5a6; }
+.btn.danger { background: #e74c3c; }
+
+.book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; }
+.book-card { background: #fff; border-radius: 8px; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #eee; }
+.book-card h3 { margin: 0 0 0.5rem; font-size: 1rem; }
+.book-card h3 a { color: #2c3e50; text-decoration: none; }
+.book-card h3 a:hover { text-decoration: underline; }
+.book-card .meta { font-size: 0.85rem; color: #7f8c8d; margin-bottom: 0.5rem; }
+.book-card .rating { color: #f39c12; }
+.book-card .card-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
+.book-card .desc { font-size: 0.9rem; color: #555; margin-top: 0.5rem; }
+
+.genre-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; }
+.genre-card { display: block; background: #fff; padding: 1rem; border-radius: 8px; text-align: center; text-decoration: none; color: #2c3e50; border: 1px solid #eee; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.genre-card:hover { border-color: #3498db; background: #f8fafc; }
+
+.search-bar { margin-bottom: 1.5rem; }
+.search-bar form { display: flex; gap: 0.5rem; max-width: 400px; align-items: stretch; }
+.search-bar input { flex: 1; padding: 0.5rem; border: 1px solid #bdc3c7; border-radius: 4px; height: 40px; }
+.search-bar button[type="submit"] { height: 40px; padding: 0 1rem; display: inline-flex; align-items: center; justify-content: center; }
+
+.recommended-section { margin-bottom: 2rem; }
+.recommended-section h2 { margin-bottom: 0.25rem; font-size: 1.25rem; }
+.recommended-note { font-size: 0.9rem; color: #7f8c8d; margin-bottom: 1rem; }
+
+.book-detail .title { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.book-detail .author, .book-detail .genre { color: #7f8c8d; margin-bottom: 0.5rem; }
+.book-detail .description { margin: 1rem 0; padding: 1rem; background: #f8f9fa; border-radius: 6px; }
+.reviews { margin-top: 1.5rem; }
+.review-item { padding: 0.75rem; background: #fff; border-radius: 6px; margin-bottom: 0.5rem; border: 1px solid #eee; }
+.review-item .rating { color: #f39c12; }
+.review-actions { margin-top: 0.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.review-form { margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 6px; }
+.review-form.review-form-hidden { display: none; }
+.review-form h3 { margin-top: 0; margin-bottom: 0.75rem; }
+.btn.small { padding: 0.25rem 0.5rem; font-size: 0.875rem; }
+.btn.small { display: inline-flex; align-items: center; justify-content: center; line-height: 1; min-height: 32px; }
+.btn.small.danger { background: #e74c3c; }
+.btn.small.danger:hover { background: #c0392b; }
+
+.reader-container { max-width: 720px; margin: 0 auto; }
+.reader-nav { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; padding: 0.5rem 0; border-bottom: 1px solid #eee; }
+.reader-nav .reader-fav-form { display: flex !important; align-items: center; }
+.reader-nav .btn.small { align-self: center; }
+.reader-nav-bottom { border-bottom: none; border-top: 1px solid #eee; }
+.reader-page-info { display: flex; align-items: center; gap: 0.35rem; }
+.reader-page-info input[type="number"] { width: 4rem; padding: 0.25rem 0.35rem; border: 1px solid #bdc3c7; border-radius: 4px; font-size: 0.95rem; }
+
+/* Full-page reader theme */
+body.reader-page { background: #faf9f7; color: #3d3a36; }
+body.reader-page[data-reader-theme="light"] { background: #faf9f7; color: #3d3a36; }
+body.reader-page[data-reader-theme="dark"] { background: #2d2b28; color: #d2cfc9; }
+body.reader-page[data-reader-theme="sepia"] { background: #f0e9df; color: #4a443c; }
+body.reader-page[data-reader-theme="light"] .main.reader-container,
+body.reader-page[data-reader-theme="dark"] .main.reader-container,
+body.reader-page[data-reader-theme="sepia"] .main.reader-container { background: transparent; }
+body.reader-page:not([data-reader-theme]) .main.reader-container { background: transparent; }
+
+.reader-view { margin: 0 -1.5rem; padding: 1rem 1.5rem 1.5rem; background: transparent; }
+.reader-view[data-theme="light"], .reader-view:not([data-theme]) { color: #3d3a36; }
+.reader-view[data-theme="dark"] { color: #d2cfc9; }
+.reader-view[data-theme="sepia"] { color: #4a443c; }
+
+.reader-content { white-space: pre-wrap; font-size: 1.1rem; line-height: 1.7; padding: 1rem 0; min-height: 320px; font-family: inherit; }
+.reader-view[data-font="georgia"] .reader-content { font-family: Georgia, 'Times New Roman', serif; }
+.reader-view[data-font="times"] .reader-content { font-family: 'Times New Roman', Times, serif; }
+.reader-view[data-font="palatino"] .reader-content { font-family: Palatino, 'Palatino Linotype', serif; }
+.reader-view[data-font="verdana"] .reader-content { font-family: Verdana, Geneva, sans-serif; }
+.reader-view[data-size="small"] .reader-content { font-size: 0.95rem; }
+.reader-view[data-size="medium"] .reader-content { font-size: 1.1rem; }
+.reader-view[data-size="large"] .reader-content { font-size: 1.25rem; }
+
+/* Panels: bookmarks, notes, settings */
+.reader-bookmarks.reader-bookmarks-panel[aria-hidden="true"] { display: none; }
+.reader-bookmarks { margin: 0.75rem 0; padding: 0.75rem; background: #f8f9fa; border-radius: 6px; border: 1px solid #eee; }
+.reader-bookmarks h3 { margin: 0 0 0.5rem; font-size: 1rem; color: #2c3e50; }
+.reader-bookmarks #btnAddBookmark { margin-bottom: 0.5rem; }
+.bookmarks-list { list-style: none; margin: 0; padding: 0; }
+.bookmark-item { display: flex; align-items: center; flex-wrap: wrap; gap: 0.35rem; padding: 0.35rem 0; border-bottom: 1px solid #eee; }
+.bookmark-item:last-child { border-bottom: none; }
+.bookmark-item .bm-page { flex: 1 1 8rem; min-width: 0; }
+
+.reader-notes.reader-notes-panel[aria-hidden="true"] { display: none; }
+.reader-notes { margin: 0.75rem 0; padding: 0.75rem; background: #f8f9fa; border-radius: 6px; border: 1px solid #eee; }
+.reader-notes h3 { margin: 0 0 0.5rem; font-size: 1rem; color: #2c3e50; }
+.reader-notes #btnAddNote { margin-bottom: 0.25rem; }
+.reader-notes-hint { margin: 0 0 0.5rem; font-size: 0.85rem; color: #7f8c8d; }
+.notes-list { list-style: none; margin: 0; padding: 0; }
+.note-item { display: flex; align-items: center; flex-wrap: wrap; gap: 0.35rem; padding: 0.35rem 0; border-bottom: 1px solid #eee; }
+.note-item:last-child { border-bottom: none; }
+.note-item .note-title { flex: 1 1 10rem; min-width: 0; }
+
+.reader-settings.reader-settings-panel[aria-hidden="true"] { display: none; }
+.reader-settings { margin: 0.75rem 0; padding: 0.75rem; background: #f8f9fa; border-radius: 6px; border: 1px solid #eee; }
+.reader-settings h3 { margin: 0 0 0.75rem; font-size: 1rem; color: #2c3e50; }
+.reader-setting-group { margin-bottom: 0.75rem; }
+.reader-setting-group:last-child { margin-bottom: 0; }
+.reader-setting-group label { display: block; margin-bottom: 0.25rem; font-size: 0.9rem; font-weight: 500; color: #555; }
+.reader-option-btns { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.reader-option-btns .reader-opt.active { background: #2980b9; }
+.reader-select { padding: 0.35rem 0.5rem; border: 1px solid #bdc3c7; border-radius: 4px; font-size: 0.9rem; min-width: 160px; }
+
+/* Theme variants for panels */
+body.reader-page[data-reader-theme="light"] .reader-bookmarks,
+body.reader-page[data-reader-theme="light"] .reader-notes,
+body.reader-page[data-reader-theme="light"] .reader-settings { background: #f2f0ec; border-color: #e8e4df; }
+body.reader-page[data-reader-theme="dark"] .reader-bookmarks,
+body.reader-page[data-reader-theme="dark"] .reader-notes,
+body.reader-page[data-reader-theme="dark"] .reader-settings { background: #383632; border-color: #45433e; color: #d2cfc9; }
+body.reader-page[data-reader-theme="sepia"] .reader-bookmarks,
+body.reader-page[data-reader-theme="sepia"] .reader-notes,
+body.reader-page[data-reader-theme="sepia"] .reader-settings { background: #e8e0d4; border-color: #ddd6cb; color: #4a443c; }
+
+.note-highlight { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+body.reader-page[data-reader-theme="light"] .note-highlight { background: rgba(52, 152, 219, 0.18); }
+body.reader-page[data-reader-theme="dark"] .note-highlight { background: rgba(126, 184, 218, 0.18); }
+body.reader-page[data-reader-theme="sepia"] .note-highlight { background: rgba(139, 115, 85, 0.18); }
+
+/* Unify action button sizes inside cards and book detail */
+.card-actions .btn { display: inline-flex; align-items: center; justify-content: center; line-height: 1; min-height: 40px; }
+.book-detail .btn { display: inline-flex; align-items: center; justify-content: center; line-height: 1; min-height: 40px; }
+.book-detail form .btn { display: inline-flex; align-items: center; justify-content: center; line-height: 1; min-height: 40px; }
+.book-actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.book-actions form { margin: 0; }
+
+/* Review submit button under textarea */
+.review-form button[type="submit"] { display: block; width: 100%; max-width: 320px; margin-top: 0.25rem; }
+
+.subscription-box { background: #fff; border-radius: 8px; padding: 1.5rem; max-width: 400px; margin: 1rem 0; border: 1px solid #eee; }
+.subscription-box h2 { margin-top: 0; }
+.subscription-box .qr { margin: 1rem 0; text-align: center; }
+.subscription-box .qr img { max-width: 200px; height: auto; }
+.subscription-box .note { font-size: 0.9rem; color: #7f8c8d; margin-top: 1rem; }
+
+.admin-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.admin-stats .stat { background: #fff; padding: 1rem; border-radius: 8px; text-align: center; border: 1px solid #eee; }
+.admin-stats .stat .num { font-size: 1.5rem; font-weight: bold; color: #3498db; }
+table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+th, td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid #eee; }
+th { background: #f8f9fa; font-weight: 600; }

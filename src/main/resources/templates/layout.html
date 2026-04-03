@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:text="${pageTitle != null ? pageTitle : 'Электронная библиотека'}">Электронная библиотека</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header class="header">
+    <a th:href="@{/books}" class="logo">Электронная библиотека</a>
+    <nav th:if="${user != null}">
+        <a th:href="@{/books}">Книги</a>
+        <a th:href="@{/genres}">Жанры</a>
+        <a th:href="@{/favorites}">Избранное</a>
+        <a th:href="@{/subscription}">Подписка</a>
+        <th:block th:if="${user != null and user.admin}">
+            <a th:href="@{/admin}">Админ</a>
+        </th:block>
+        <form th:action="@{/logout}" method="post" class="inline">
+            <button type="submit">Выйти</button>
+        </form>
+    </nav>
+    <nav th:if="${user == null}">
+        <a th:href="@{/login}">Вход</a>
+        <a th:href="@{/register}">Регистрация</a>
+    </nav>
+</header>
+<main class="main">
+    <div th:if="${message}" class="alert success" th:text="${message}"></div>
+    <div th:if="${error}" class="alert error" th:text="${error}"></div>
+    <div th:replace="~{::content}">Content</div>
+</main>
+<footer class="footer">
+    <p>Электронная библиотека</p>
+</footer>
+</body>
+</html>

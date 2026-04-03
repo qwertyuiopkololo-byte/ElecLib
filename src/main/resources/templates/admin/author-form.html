@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Автор — Админ</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+<main class="main">
+    <h1 th:text="${author.authorId != null ? 'Редактировать автора' : 'Новый автор'}">Автор</h1>
+    <p><a th:href="@{/admin/authors}" class="btn secondary">← Назад</a></p>
+    <form th:action="@{/admin/authors}" th:object="${author}" method="post">
+        <input type="hidden" th:field="*{authorId}"/>
+        <label>Имя</label>
+        <input type="text" th:field="*{firstName}" required/>
+        <label>Фамилия</label>
+        <input type="text" th:field="*{lastName}" required/>
+        <label>Биография</label>
+        <textarea th:field="*{biography}"></textarea>
+        <button type="submit">Сохранить</button>
+    </form>
+</main>
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

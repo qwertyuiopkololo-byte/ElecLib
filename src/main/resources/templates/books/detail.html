@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${book.title}">Книга</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+<main class="main">
+    <div th:if="${error}" class="alert error" th:text="${error}"></div>
+    <div class="book-detail">
+        <h1 class="title" th:text="${book.title}">Title</h1>
+        <p class="author">Автор: <a th:href="@{/books(q=${card.authorName})}" th:text="${card.authorName}">Author</a></p>
+        <p class="genre">Жанр: <a th:href="@{/books(genreId=${card.genreId})}" th:text="${card.genreName}">Genre</a></p>
+        <div th:if="${card.reviewCount > 0}" class="rating">★ <span th:text="${#numbers.formatDecimal(card.averageRating, 1, 1)}">0</span> (<span th:text="${card.reviewCount}">0</span> отзывов)</div>
+        <div th:if="${book.description}" class="description" th:text="${book.description}"></div>
+        <div th:if="${user != null}">
+            <th:block th:if="${hasAccess}">
+                <a th:href="@{/books/{id}/read(id=${book.bookId})}" class="btn">Читать</a>
+            </th:block>
+            <th:block th:if="${!hasAccess}">
+                <a th:href="@{/subscription?required=1}" class="btn">Оформить подписку для чтения</a>
+            </th:block>
+            <form th:if="${card.inFavorites}" th:action="@{/books/{id}/favorite(id=${book.bookId})}" method="post" style="display:inline;">
+                <input type="hidden" name="add" value="0"/>
+                <button type="submit" class="btn secondary">Убрать из избранного</button>
+            </form>
+            <form th:if="${!card.inFavorites}" th:action="@{/books/{id}/favorite(id=${book.bookId})}" method="post" style="display:inline;">
+                <input type="hidden" name="add" value="1"/>
+                <button type="submit" class="btn">В избранное</button>
+            </form>
+        </div>
+        <div th:if="${user == null}">
+            <a th:href="@{/login}" class="btn">Войти для чтения и отзывов</a>
+        </div>
+    </div>
+    <section class="reviews">
+        <h2>Отзывы</h2>
+        <div th:each="r : ${reviews}" class="review-item">
+            <span class="rating">★ <span th:text="${r.rating}">0</span></span>
+            <strong th:text="${r.userFullName}">User</strong>
+            <p th:if="${r.review}" th:text="${r.review}"></p>
+            <div th:if="${r.isCurrentUser}" class="review-actions">
+                <a href="#review-form" class="btn small show-review-form">Редактировать</a>
+                <form th:action="@{/books/{id}/review/delete(id=${book.bookId})}" method="post" style="display:inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn small danger" onclick="return confirm('Удалить отзыв?');">Удалить</button>
+                </form>
+            </div>
+        </div>
+        <div th:if="${user != null}" class="review-form" id="review-form" th:classappend="${myRating != null} ? 'review-form-hidden' : ''">
+            <h3 th:text="${myRating != null ? 'Редактировать отзыв' : 'Оставить отзыв'}">Оставить отзыв</h3>
+            <form th:action="@{/books/{id}/review(id=${book.bookId})}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <label>Ваша оценка (1–5)</label>
+                <input type="number" name="rating" min="1" max="5" th:value="${myRating != null ? myRating.rating : 4}" required/>
+                <label>Отзыв (необязательно)</label>
+                <textarea name="review" th:text="${myRating != null ? myRating.review : ''}"></textarea>
+                <button type="submit" th:text="${myRating != null ? 'Сохранить изменения' : 'Отправить'}">Отправить</button>
+            </form>
+        </div>
+    </section>
+</main>
+<script>
+(function() {
+    var formEl = document.getElementById('review-form');
+    if (!formEl) return;
+    document.querySelectorAll('.show-review-form').forEach(function(a) {
+        a.addEventListener('click', function() { formEl.classList.remove('review-form-hidden'); });
+    });
+    if (location.hash === '#review-form') formEl.classList.remove('review-form-hidden');
+})();
+</script>
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

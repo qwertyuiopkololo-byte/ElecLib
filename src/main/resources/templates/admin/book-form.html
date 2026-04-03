@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Книга — Админ</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+<main class="main">
+    <h1 th:text="${book.bookId != null && book.bookId > 0 ? 'Редактировать книгу' : 'Новая книга'}">Книга</h1>
+    <p><a th:href="@{/admin/books}" class="btn secondary">← Назад</a></p>
+    <form th:action="@{/admin/books}" th:object="${book}" method="post">
+        <input type="hidden" th:field="*{bookId}"/>
+        <label>Название</label>
+        <input type="text" th:field="*{title}" required/>
+        <label>Описание</label>
+        <textarea th:field="*{description}"></textarea>
+        <label>Текст книги</label>
+        <textarea th:field="*{text}" style="min-height:200px" required></textarea>
+        <label>Автор</label>
+        <select name="authorId" required>
+            <option th:each="a : ${authors}" th:value="${a.authorId}" th:text="${a.fullName}" th:selected="${book.authorId != null && book.authorId == a.authorId}"></option>
+        </select>
+        <label>Жанр</label>
+        <select name="genreId" required>
+            <option th:each="g : ${genres}" th:value="${g.genreId}" th:text="${g.name}" th:selected="${book.genreId != null && book.genreId == g.genreId}"></option>
+        </select>
+        <button type="submit">Сохранить</button>
+    </form>
+</main>
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

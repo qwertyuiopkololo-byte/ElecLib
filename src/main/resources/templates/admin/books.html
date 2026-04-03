@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Книги — Админ</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+<main class="main">
+    <h1>Книги</h1>
+    <div th:if="${message}" class="alert success" th:text="${message}"></div>
+    <p><a th:href="@{/admin}" class="btn secondary">← Назад</a> <a th:href="@{/admin/books/new}" class="btn">Добавить книгу</a></p>
+    <table>
+        <thead><tr><th>ID</th><th>Название</th><th>Автор</th><th>Жанр</th><th>Действия</th></tr></thead>
+        <tbody>
+            <tr th:each="b : ${books}">
+                <td th:text="${b.bookId}">-</td>
+                <td th:text="${b.title}">-</td>
+                <td th:text="${authorMap.get(b.authorId) != null ? authorMap.get(b.authorId).fullName : '-'}">-</td>
+                <td th:text="${genreMap.get(b.genreId) != null ? genreMap.get(b.genreId).name : '-'}">-</td>
+                <td><a th:href="@{/admin/books/edit/{id}(id=${b.bookId})}">Изменить</a></td>
+            </tr>
+        </tbody>
+    </table>
+</main>
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

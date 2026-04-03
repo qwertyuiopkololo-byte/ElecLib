@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Админ-панель — ElecLib</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+<main class="main">
+    <h1>Админ-панель</h1>
+    <div th:if="${message}" class="alert success" th:text="${message}"></div>
+    <div class="admin-stats">
+        <div class="stat"><span class="num" th:text="${usersCount}">0</span><br/>Пользователей</div>
+        <div class="stat"><span class="num" th:text="${booksCount}">0</span><br/>Книг</div>
+        <div class="stat"><span class="num" th:text="${authorsCount}">0</span><br/>Авторов</div>
+        <div class="stat"><span class="num" th:text="${genresCount}">0</span><br/>Жанров</div>
+    </div>
+    <p>
+        <a th:href="@{/admin/users}" class="btn">Пользователи</a>
+        <a th:href="@{/admin/books}" class="btn">Книги</a>
+        <a th:href="@{/admin/authors}" class="btn">Авторы</a>
+        <a th:href="@{/admin/genres}" class="btn">Жанры</a>
+        <a th:href="@{/admin/subscriptions}" class="btn">Подписки</a>
+    </p>
+</main>
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

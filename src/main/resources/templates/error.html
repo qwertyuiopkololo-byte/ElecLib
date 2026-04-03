@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Ошибка — Электронная библиотека</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header class="header">
+    <a th:href="@{/}" href="/" class="logo">Электронная библиотека</a>
+    <nav><a th:href="@{/books}" href="/books">Книги</a> <a th:href="@{/login}" href="/login">Вход</a></nav>
+</header>
+<main class="main">
+    <h1>Произошла ошибка</h1>
+    <p class="alert error" th:text="${errorMessage != null ? errorMessage : 'Внутренняя ошибка сервера. Попробуйте позже.'}">Ошибка</p>
+    <p><a th:href="@{/books}" href="/books" class="btn">На главную</a> <a th:href="@{/login}" href="/login" class="btn secondary">Вход</a></p>
+</main>
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

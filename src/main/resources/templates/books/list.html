@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Книги — ElecLib</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+<main class="main">
+    <h1>Книги</h1>
+    <div class="search-bar">
+        <form th:action="@{/books}" method="get">
+            <input type="text" name="q" th:value="${searchQuery}" placeholder="Поиск по названию или автору"/>
+            <button type="submit">Искать</button>
+        </form>
+    </div>
+    <section th:if="${recommendedBooks != null && !#lists.isEmpty(recommendedBooks)}" class="recommended-section">
+        <h2>Рекомендуем</h2>
+        <p class="recommended-note">Подобрано по вашим избранным книгам</p>
+        <div class="book-grid">
+            <div class="book-card" th:each="b : ${recommendedBooks}">
+                <h3><a th:href="@{/books/{id}(id=${b.bookId})}" th:text="${b.title}">Title</a></h3>
+                <div class="meta"><span th:text="${b.authorName}">Author</span> · <span th:text="${b.genreName}">Genre</span></div>
+                <div class="rating" th:if="${b.reviewCount > 0}">
+                    ★ <span th:text="${#numbers.formatDecimal(b.averageRating, 1, 1)}">0</span> (<span th:text="${b.reviewCount}">0</span>)
+                </div>
+                <p class="desc" th:if="${b.description}" th:text="${#strings.abbreviate(b.description, 120)}">...</p>
+                <p th:if="${b.subscriptionRequired && user != null}"><small>Нужна подписка</small></p>
+            </div>
+        </div>
+    </section>
+    <div th:if="${#lists.isEmpty(books)}" class="alert">Книг не найдено.</div>
+    <div class="book-grid" th:if="${!#lists.isEmpty(books)}">
+        <div class="book-card" th:each="b : ${books}">
+            <h3><a th:href="@{/books/{id}(id=${b.bookId})}" th:text="${b.title}">Title</a></h3>
+            <div class="meta">
+                <span th:text="${b.authorName}">Author</span> · <span th:text="${b.genreName}">Genre</span>
+            </div>
+            <div class="rating" th:if="${b.reviewCount > 0}">
+                ★ <span th:text="${#numbers.formatDecimal(b.averageRating, 1, 1)}">0</span> (<span th:text="${b.reviewCount}">0</span>)
+            </div>
+            <p class="desc" th:if="${b.description}" th:text="${#strings.abbreviate(b.description, 120)}">...</p>
+            <p th:if="${b.subscriptionRequired && user != null}"><small>Нужна подписка</small></p>
+        </div>
+    </div>
+</main>
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>
