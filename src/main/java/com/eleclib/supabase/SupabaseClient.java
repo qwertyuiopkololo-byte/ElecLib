@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.time.Instant;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpEntity;
@@ -33,6 +34,16 @@ public class SupabaseClient {
             .registerModule(new JavaTimeModule())
             .registerModule(new SimpleModule().addDeserializer(Instant.class, new LenientInstantDeserializer()))
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+
+    @PostConstruct
+    void validateSupabaseUrl() {
+        String u = supabaseProperties.getUrl();
+        if (u == null || u.isBlank() || !(u.startsWith("http://") || u.startsWith("https://"))) {
+            throw new IllegalStateException(
+                    "supabase.url пустой или неверный. Задайте SUPABASE_URL/SUPABASE_KEY или создайте "
+                            + "src/main/resources/application-local.properties по образцу application.properties.example.");
+        }
+    }
 
     private String baseUrl() {
         return supabaseProperties.getUrl() + "/rest/v1";
@@ -82,7 +93,6 @@ public class SupabaseClient {
         return list.isEmpty() ? null : list.get(0);
     }
 
-    /** PK column names: users=user_id, books=book_id, authors=author_id, genres=genre_id, subscriptions=subscription_id */
     public <T> T getById(String table, String idColumn, Long id, Class<T> type) {
         return getOne(table, idColumn, id, type);
     }

@@ -1,7 +1,7 @@
 # 1. Скопируйте этот файл в application-local.properties (он в .gitignore).
 # 2. Подставьте URL и service_role key из Supabase (Settings → API).
-# 3. Запуск с профилем local, например: SPRING_PROFILES_ACTIVE=local
-#    или в IntelliJ: Environment → SPRING_PROFILES_ACTIVE=local
+# 3. Spring Boot подхватит application-local.properties через spring.config.import в application.properties.
+#    Либо задайте переменные окружения SUPABASE_URL и SUPABASE_KEY.
 
 supabase.url=https://YOUR_PROJECT_REF.supabase.co
 supabase.key=YOUR_SERVICE_ROLE_SECRET

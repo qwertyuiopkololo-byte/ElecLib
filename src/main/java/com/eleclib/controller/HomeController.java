@@ -13,7 +13,6 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        // Главная страница для всех — каталог книг.
         return "redirect:/books";
     }
 }

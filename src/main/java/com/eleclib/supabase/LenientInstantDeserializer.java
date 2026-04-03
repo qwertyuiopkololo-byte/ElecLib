@@ -12,11 +12,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 
-/**
- * Deserializes ISO-8601 timestamp strings from Supabase/PostgreSQL that may lack
- * a trailing 'Z' and use variable fractional seconds (e.g. 2026-02-07T20:10:04.910946).
- * Such values are interpreted as UTC.
- */
 public class LenientInstantDeserializer extends JsonDeserializer<Instant> {
 
     private static final DateTimeFormatter FORMATTER = new DateTimeFormatterBuilder()
@@ -32,11 +27,9 @@ public class LenientInstantDeserializer extends JsonDeserializer<Instant> {
         if (value == null || value.isEmpty()) {
             return null;
         }
-        // Standard ISO-8601 with Z is parsed by Instant directly
         if (value.endsWith("Z")) {
             return Instant.parse(value);
         }
-        // No zone (e.g. from PostgreSQL): treat as UTC, support 1–9 fractional digits
         LocalDateTime ldt = LocalDateTime.parse(value, FORMATTER);
         return ldt.toInstant(ZoneOffset.UTC);
     }
