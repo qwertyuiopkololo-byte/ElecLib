@@ -1,0 +1,140 @@
+<mxfile host="app.diagrams.net" modified="2026-05-20T12:00:00.000Z" agent="ElecLib" version="22.1.0">
+  <diagram id="fig12" name="12 - Layout">
+    <mxGraphModel dx="900" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" page="1" pageScale="1" pageWidth="900" pageHeight="600" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="t12" value="Risunok 12 — layout.html + header" style="text;html=1;strokeColor=none;fillColor=none;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="250" y="10" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="hdr" value="header: logo | Knigi | Komiksy | Polki | Vyhod" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#2c3e50;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="820" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="main" value="main.main&#xa;th:replace content&#xa;alert success / error" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f3ef;align=left;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="115" width="820" height="380" as="geometry"/>
+        </mxCell>
+        <mxCell id="ftr" value="footer" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#eeeeee;" vertex="1" parent="1">
+          <mxGeometry x="40" y="510" width="820" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="css" value="style.css" style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff2cc;size=14;" vertex="1" parent="1">
+          <mxGeometry x="700" y="200" width="120" height="60" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="fig14" name="14 - Admin kniga">
+    <mxGraphModel dx="900" dy="650" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" page="1" pageScale="1" pageWidth="900" pageHeight="650" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="t14" value="Risunok 14 — admin/book-form.html" style="text;html=1;strokeColor=none;fillColor=none;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="260" y="10" width="380" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="Nazvanie, opisanie" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="80" y="60" width="280" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="URL oblozhki (coverUrl)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="80" y="115" width="280" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="[x] Komiks + pdfFile upload" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="80" y="175" width="280" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="f4" value="Tekst knigi (textarea)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="80" y="245" width="280" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="f5" value="Avtor, zhanr, Sohranit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="80" y="340" width="280" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="ctl" value="AdminController.saveBook()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;" vertex="1" parent="1">
+          <mxGeometry x="420" y="175" width="200" height="50" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="fig16" name="16 - Katalog">
+    <mxGraphModel dx="900" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" page="1" pageScale="1" pageWidth="900" pageHeight="600" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="t16" value="Risunok 16 — books/list.html + book-card" style="text;html=1;strokeColor=none;fillColor=none;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="220" y="10" width="460" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sr" value="Poisk: input q + Iskat" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="350" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="c1" value="img oblozhka" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="40" y="120" width="100" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="c2" value="zaglushka bukva" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#5d6d7e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="160" y="120" width="100" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="c3" value="kartochka + PDF badge" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="280" y="120" width="100" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="gr" value="book-grid-covers" style="text;html=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="290" width="200" height="24" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="fig18" name="18 - Komiksy UI">
+    <mxGraphModel dx="900" dy="550" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" page="1" pageScale="1" pageWidth="900" pageHeight="550" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="t18" value="Risunok 18 — comics/list.html" style="text;html=1;strokeColor=none;fillColor=none;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="280" y="10" width="340" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="h1" value="Komiksy" style="text;html=1;fontSize=18;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="50" width="120" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="card" value="oblozhka&#xa;Chitat | V izbrannoe&#xa;comicReady" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="160" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="cc" value="ComicController /comics" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;" vertex="1" parent="1">
+          <mxGeometry x="250" y="150" width="180" height="45" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="fig19" name="19 - Chitalka PDF">
+    <mxGraphModel dx="900" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" page="1" pageScale="1" pageWidth="900" pageHeight="600" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="t19" value="Risunok 19 — read-comic.html + PDF.js" style="text;html=1;strokeColor=none;fillColor=none;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="240" y="10" width="420" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="nav" value="Pred | str N | Next | Zakladki" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="500" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="cv" value="canvas (PDF.js)&#xa;/books/{id}/comic.pdf" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a1a;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="120" y="120" width="400" height="320" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="fig20" name="20 - Oglavlenie UI">
+    <mxGraphModel dx="900" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" page="1" pageScale="1" pageWidth="900" pageHeight="600" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="t20" value="Risunok 20 — read.html oglavlenie" style="text;html=1;strokeColor=none;fillColor=none;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="250" y="10" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="nv" value="Oglavlenie | Zakladki | Oformlenie" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="450" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="toc" value="reader-toc-panel&#xa;Glava 1 [Pereiti]&#xa;Vvedenie [Pereiti]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="40" y="110" width="220" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="txt" value="tekst stranicy knigi" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="280" y="110" width="400" height="350" as="geometry"/>
+        </mxCell>
+        <mxCell id="rt" value="ReaderToc.build()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;" vertex="1" parent="1">
+          <mxGeometry x="40" y="250" width="160" height="40" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -48,7 +48,7 @@ public class AuthController {
         } catch (HttpClientErrorException e) {
             String body = e.getResponseBodyAsString();
             String msg = "Ошибка Supabase: " + e.getStatusCode();
-            if (body != null && !body.isBlank()) {
+            if (!body.isBlank()) {
                 msg += ". " + (body.length() > 200 ? body.substring(0, 200) + "..." : body);
             } else {
                 msg += ". Убедитесь, что указан ключ service_role и таблица users создана (supabase_schema.sql).";

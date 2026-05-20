@@ -29,14 +29,6 @@ public class UserService {
         }
     }
 
-    public User findByLogin(String login) {
-        return userRepository.findByLogin(login).orElse(null);
-    }
-
-    public User findById(Long id) {
-        return userRepository.findById(id).orElse(null);
-    }
-
     public User register(String login, String rawPassword, String firstName, String lastName) {
         if (userRepository.existsByLogin(login)) {
             throw new IllegalArgumentException("Логин уже занят");

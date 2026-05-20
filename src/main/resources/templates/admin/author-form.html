@@ -1,23 +1,24 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta charset="UTF-8"/>
     <title>Автор — Админ</title>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
-<body>
+<body class="admin-page">
 <div th:replace="~{fragments/header}"></div>
 <main class="main">
     <h1 th:text="${author.authorId != null ? 'Редактировать автора' : 'Новый автор'}">Автор</h1>
     <p><a th:href="@{/admin/authors}" class="btn secondary">← Назад</a></p>
     <form th:action="@{/admin/authors}" th:object="${author}" method="post">
         <input type="hidden" th:field="*{authorId}"/>
-        <label>Имя</label>
-        <input type="text" th:field="*{firstName}" required/>
-        <label>Фамилия</label>
-        <input type="text" th:field="*{lastName}" required/>
-        <label>Биография</label>
-        <textarea th:field="*{biography}"></textarea>
+        <label for="firstName">Имя</label>
+        <input type="text" th:field="*{firstName}" id="firstName" required/>
+        <label for="lastName">Фамилия</label>
+        <input type="text" th:field="*{lastName}" id="lastName" required/>
+        <label for="biography">Биография</label>
+        <textarea th:field="*{biography}" id="biography"></textarea>
         <button type="submit">Сохранить</button>
     </form>
 </main>

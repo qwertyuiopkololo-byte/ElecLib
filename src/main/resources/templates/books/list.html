@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Книги — ElecLib</title>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
-<body>
+<body class="catalog-page">
 <div th:replace="~{fragments/header}"></div>
 <main class="main">
     <div th:if="${message}" class="alert success" th:text="${message}"></div>
@@ -18,12 +19,15 @@
             <a th:href="@{/books/{id}/read(id=${continueReading.bookId})}" class="btn">Открыть</a>
         </div>
     </div>
+    <div class="catalog-toolbar">
     <h1>Книги</h1>
     <div class="search-bar">
         <form th:action="@{/books}" method="get">
-            <input type="text" name="q" th:value="${searchQuery}" placeholder="Поиск по названию или автору"/>
+            <label for="book-search-q" class="visually-hidden">Поиск по названию или автору</label>
+            <input type="text" name="q" id="book-search-q" th:value="${searchQuery}" placeholder="Поиск по названию или автору"/>
             <button type="submit">Искать</button>
         </form>
+    </div>
     </div>
     <section th:if="${recommendedBooks != null && !#lists.isEmpty(recommendedBooks)}" class="recommended-section">
         <h2>Рекомендуем</h2>

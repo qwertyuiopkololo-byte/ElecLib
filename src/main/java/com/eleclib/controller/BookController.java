@@ -12,10 +12,15 @@ import com.eleclib.service.ContinueReadingService;
 import com.eleclib.service.FavoriteService;
 import com.eleclib.service.ReadingNoteService;
 import com.eleclib.service.ReadingPositionService;
+import com.eleclib.service.ComicPdfStorageService;
 import com.eleclib.service.ReadingShelfService;
 import com.eleclib.service.UserService;
 import com.eleclib.util.ReaderToc;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +43,7 @@ public class BookController {
     private final ReadingNoteService readingNoteService;
     private final ContinueReadingService continueReadingService;
     private final ReadingShelfService readingShelfService;
+    private final ComicPdfStorageService comicPdfStorageService;
 
     @GetMapping
     public String list(@RequestParam(required = false) String q,
@@ -79,6 +85,7 @@ public class BookController {
         model.addAttribute("card", card);
         model.addAttribute("reviews", bookService.getReviews(id, user != null ? user.getUserId() : null));
         model.addAttribute("hasAccess", user != null && bookService.hasSubscriptionAccess(user));
+        model.addAttribute("comicReady", !book.isComic() || comicPdfStorageService.hasPdf(id));
         if (user != null) {
             model.addAttribute("myRating", bookRatingService.getRating(user.getUserId(), id));
             model.addAttribute("shelfSummaries", readingShelfService.listSummaries(user.getUserId()));
@@ -109,8 +116,34 @@ public class BookController {
         model.addAttribute("bookMarks", bookMarkService.getBookmarks(user.getUserId(), id));
         model.addAttribute("readingNotes", readingNoteService.getNotes(user.getUserId(), id));
         model.addAttribute("inFavorites", favoriteService.isFavorite(user.getUserId(), id));
+        if (book.isComic()) {
+            if (!comicPdfStorageService.hasPdf(id)) {
+                return "redirect:/books/" + id + "?comicMissing=1";
+            }
+            return "books/read-comic";
+        }
         model.addAttribute("tocEntries", ReaderToc.build(book.getText()));
         return "books/read";
+    }
+
+    @GetMapping("/{id}/comic.pdf")
+    public ResponseEntity<Resource> comicPdf(@PathVariable Long id) {
+        User user = userService.getCurrentUser();
+        if (user == null || !bookService.hasSubscriptionAccess(user)) {
+            return ResponseEntity.status(403).build();
+        }
+        Book book = bookService.findById(id);
+        if (book == null || !book.isComic()) {
+            return ResponseEntity.notFound().build();
+        }
+        Resource resource = comicPdfStorageService.asResource(id);
+        if (resource == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"comic-" + id + ".pdf\"")
+                .body(resource);
     }
 
     @PostMapping("/{id}/reading-position")
@@ -193,6 +226,7 @@ public class BookController {
             favoriteService.removeFavorite(user.getUserId(), id);
         }
         if ("favorites".equals(returnTo)) return "redirect:/favorites";
+        if ("comics".equals(returnTo)) return "redirect:/comics";
         if ("read".equals(returnTo)) return "redirect:/books/" + id + "/read";
         return "redirect:/books/" + id;
     }

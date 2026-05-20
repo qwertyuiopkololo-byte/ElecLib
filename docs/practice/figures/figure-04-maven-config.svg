@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="420" viewBox="0 0 720 420">
+  <style>
+    .title { font: bold 16px Arial, sans-serif; fill: #2c3e50; }
+    .caption { font: 12px Arial, sans-serif; fill: #7f8c8d; }
+    .code { font: 12px Consolas, monospace; fill: #abb2bf; }
+    .tag { fill: #e06c75; }
+    .com { fill: #5c6370; }
+    .head { fill: #21252b; }
+  </style>
+  <rect width="720" height="420" fill="#ffffff"/>
+  <text x="360" y="28" text-anchor="middle" class="title">&#1056;&#1080;&#1089;&#1091;&#1085;&#1086;&#1082; 4 &#8212; &#1060;&#1088;&#1072;&#1075;&#1084;&#1077;&#1085;&#1090; pom.xml</text>
+  <text x="360" y="48" text-anchor="middle" class="caption">Maven, Spring Boot 3.2, Java 17</text>
+  <rect x="40" y="60" width="640" height="330" rx="8" class="head"/>
+  <text x="56" y="88" class="code"><tspan class="tag">&lt;parent&gt;</tspan> spring-boot-starter-parent 3.2.0</text>
+  <text x="56" y="118" class="code"><tspan class="tag">&lt;dependency&gt;</tspan> spring-boot-starter-web</text>
+  <text x="56" y="138" class="code"><tspan class="tag">&lt;dependency&gt;</tspan> spring-boot-starter-thymeleaf</text>
+  <text x="56" y="158" class="code"><tspan class="tag">&lt;dependency&gt;</tspan> spring-boot-starter-security</text>
+  <text x="56" y="178" class="code"><tspan class="tag">&lt;dependency&gt;</tspan> lombok</text>
+  <text x="56" y="208" class="code"><tspan class="tag">&lt;java.version&gt;</tspan> 17</text>
+  <text x="56" y="238" class="code"><tspan class="tag">&lt;build&gt;</tspan> spring-boot-maven-plugin</text>
+</svg>

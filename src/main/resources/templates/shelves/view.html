@@ -1,11 +1,12 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+﻿<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta charset="UTF-8"/>
     <title th:text="${shelf.name} + ' — ElecLib'">Полка</title>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
-<body>
+<body class="shelves-page">
 <div th:replace="~{fragments/header}"></div>
 <main class="main">
     <p><a th:href="@{/shelves}" class="btn secondary">← Все полки</a></p>

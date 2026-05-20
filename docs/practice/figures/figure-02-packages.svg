@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="560" viewBox="0 0 780 560">
+  <style>
+    .title { font: bold 16px Arial, sans-serif; fill: #2c3e50; }
+    .caption { font: 12px Arial, sans-serif; fill: #7f8c8d; }
+    .pkg { font: bold 13px Consolas, monospace; fill: #2c3e50; }
+    .item { font: 12px Consolas, monospace; fill: #34495e; }
+    .desc { font: 11px Arial, sans-serif; fill: #7f8c8d; }
+    .box { fill: #fff; stroke: #bdc3c7; }
+    .h { fill: #ecf0f1; stroke: #bdc3c7; }
+  </style>
+  <rect width="780" height="560" fill="#ffffff"/>
+  <text x="390" y="32" text-anchor="middle" class="title">&#1056;&#1080;&#1089;&#1091;&#1085;&#1086;&#1082; 2 &#8212; &#1055;&#1072;&#1082;&#1077;&#1090;&#1099; com.eleclib</text>
+  <text x="390" y="52" text-anchor="middle" class="caption">&#1056;&#1072;&#1079;&#1076;&#1077;&#1083;&#1077;&#1085;&#1080;&#1077; &#1087;&#1086; &#1089;&#1083;&#1086;&#1103;&#1084; &#1072;&#1088;&#1093;&#1080;&#1090;&#1077;&#1082;&#1090;&#1091;&#1088;&#1099;</text>
+
+  <rect x="30" y="70" width="220" height="200" rx="6" class="box"/>
+  <rect x="30" y="70" width="220" height="28" rx="6" class="h"/>
+  <text x="140" y="90" text-anchor="middle" class="pkg">controller</text>
+  <text x="44" y="118" class="item">BookController</text>
+  <text x="44" y="136" class="item">ComicController</text>
+  <text x="44" y="154" class="item">FavoriteController</text>
+  <text x="44" y="172" class="item">AdminController</text>
+  <text x="44" y="190" class="item">ReadingShelfController</text>
+  <text x="44" y="252" class="desc">HTTP, stranicy</text>
+
+  <rect x="280" y="70" width="220" height="200" rx="6" class="box"/>
+  <rect x="280" y="70" width="220" height="28" rx="6" class="h"/>
+  <text x="390" y="90" text-anchor="middle" class="pkg">service</text>
+  <text x="294" y="118" class="item">BookService</text>
+  <text x="294" y="136" class="item">ComicPdfStorageService</text>
+  <text x="294" y="154" class="item">ReadingPositionService</text>
+  <text x="294" y="172" class="item">ReadingShelfService</text>
+  <text x="294" y="190" class="item">FavoriteService</text>
+  <text x="294" y="252" class="desc">Biznes-logika</text>
+
+  <rect x="530" y="70" width="220" height="200" rx="6" class="box"/>
+  <rect x="530" y="70" width="220" height="28" rx="6" class="h"/>
+  <text x="640" y="90" text-anchor="middle" class="pkg">repository</text>
+  <text x="544" y="118" class="item">BookRepository</text>
+  <text x="544" y="136" class="item">UserRepository</text>
+  <text x="544" y="154" class="item">FavoriteRepository</text>
+  <text x="544" y="172" class="item">ReadingPositionRepository</text>
+  <text x="544" y="220" class="item">SupabaseClient</text>
+  <text x="544" y="252" class="desc">Dostup k BD</text>
+
+  <rect x="30" y="290" width="170" height="120" rx="6" class="box"/>
+  <text x="115" y="314" text-anchor="middle" class="pkg">model / dto</text>
+  <text x="44" y="338" class="item">Book, User, Author</text>
+  <text x="44" y="356" class="item">BookCardDto ...</text>
+
+  <rect x="220" y="290" width="170" height="120" rx="6" class="box"/>
+  <text x="305" y="314" text-anchor="middle" class="pkg">config</text>
+  <text x="234" y="338" class="item">SecurityConfig</text>
+  <text x="234" y="356" class="item">SampleComicLoader</text>
+
+  <rect x="410" y="290" width="150" height="120" rx="6" class="box"/>
+  <text x="485" y="314" text-anchor="middle" class="pkg">util</text>
+  <text x="424" y="338" class="item">ReaderPaging</text>
+  <text x="424" y="356" class="item">ReaderToc</text>
+
+  <rect x="30" y="430" width="720" height="100" rx="6" fill="#f4ecf7" stroke="#9b59b6"/>
+  <text x="390" y="458" text-anchor="middle" class="pkg">templates + static (Thymeleaf)</text>
+  <text x="390" y="508" text-anchor="middle" class="desc">ElecLibApplication.java</text>
+</svg>

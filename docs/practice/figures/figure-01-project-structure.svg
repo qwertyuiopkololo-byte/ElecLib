@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="520" viewBox="0 0 720 520">
+  <style>
+    .title { font: bold 16px Arial, sans-serif; fill: #2c3e50; }
+    .caption { font: 12px Arial, sans-serif; fill: #7f8c8d; }
+    .folder { font: 13px Consolas, monospace; fill: #1a1a1a; }
+    .root { font: bold 13px Consolas, monospace; fill: #2c3e50; }
+    .box { fill: #f8f9fa; stroke: #bdc3c7; stroke-width: 1; }
+    .line { stroke: #95a5a6; stroke-width: 1; }
+  </style>
+  <rect width="720" height="520" fill="#ffffff"/>
+  <text x="360" y="32" text-anchor="middle" class="title">&#1056;&#1080;&#1089;&#1091;&#1085;&#1086;&#1082; 1 &#8212; &#1057;&#1090;&#1088;&#1091;&#1082;&#1090;&#1091;&#1088;&#1072; &#1087;&#1088;&#1086;&#1077;&#1082;&#1090;&#1072; ElecLib</text>
+  <text x="360" y="52" text-anchor="middle" class="caption">&#1050;&#1086;&#1088;&#1085;&#1077;&#1074;&#1099;&#1077; &#1082;&#1072;&#1090;&#1072;&#1083;&#1086;&#1075;&#1080; &#1080; &#1082;&#1086;&#1085;&#1092;&#1080;&#1075;&#1091;&#1088;&#1072;&#1094;&#1080;&#1103;</text>
+  <rect x="40" y="70" width="640" height="420" rx="8" class="box"/>
+  <text x="60" y="100" class="root">ElecLib/</text>
+  <line x1="60" y1="108" x2="660" y2="108" class="line"/>
+  <text x="80" y="128" class="folder">|-- pom.xml</text>
+  <text x="80" y="150" class="folder">|-- mvnw, mvnw.cmd</text>
+  <text x="80" y="172" class="folder">|-- README.md</text>
+  <text x="80" y="194" class="folder">|-- supabase_schema.sql</text>
+  <text x="80" y="216" class="folder">|-- data/comics/  (PDF)</text>
+  <text x="80" y="238" class="folder">|-- docs/practice/figures/</text>
+  <text x="80" y="260" class="folder">|-- src/main/java/com/eleclib/</text>
+  <text x="80" y="282" class="folder">|-- src/main/resources/</text>
+  <text x="100" y="304" class="folder">|   |-- application.properties</text>
+  <text x="100" y="326" class="folder">|   |-- templates/</text>
+  <text x="100" y="348" class="folder">|   |-- static/css/</text>
+  <text x="100" y="370" class="folder">|   \-- samples/demo-comic.pdf</text>
+  <text x="80" y="392" class="folder">|-- src/test/java/</text>
+  <text x="80" y="414" class="folder">\-- target/</text>
+  <rect x="60" y="430" width="600" height="48" rx="4" fill="#e8f4fc" stroke="#3498db"/>
+  <text x="360" y="458" text-anchor="middle" class="caption">IntelliJ IDEA / Maven / JDK 17</text>
+</svg>

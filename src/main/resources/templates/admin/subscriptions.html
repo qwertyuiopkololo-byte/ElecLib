@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta charset="UTF-8"/>
     <title>Подписки — Админ</title>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
-<body>
+<body class="admin-page">
 <div th:replace="~{fragments/header}"></div>
 <main class="main">
     <h1>Подписки</h1>
@@ -25,10 +26,10 @@
     </table>
     <h2>Активировать подписку вручную</h2>
     <form th:action="@{/admin/subscriptions/activate}" method="post">
-        <label>User ID</label>
-        <input type="number" name="userId" required/>
-        <label>Месяцев</label>
-        <input type="number" name="months" value="1" min="1"/>
+        <label for="sub-userId">ID пользователя</label>
+        <input type="number" name="userId" id="sub-userId" required/>
+        <label for="sub-months">Месяцев</label>
+        <input type="number" name="months" id="sub-months" value="1" min="1"/>
         <button type="submit" class="btn">Активировать</button>
     </form>
 </main>

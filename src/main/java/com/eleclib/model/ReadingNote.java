@@ -7,6 +7,7 @@ import java.time.Instant;
 
 @Getter
 @Setter
+/** Нужен Jackson/Supabase при десериализации JSON. */
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

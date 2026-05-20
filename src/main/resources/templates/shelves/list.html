@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta charset="UTF-8"/>
     <title>Мои полки — ElecLib</title>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
-<body>
+<body class="shelves-page">
 <div th:replace="~{fragments/header}"></div>
 <main class="main">
     <h1>Мои полки</h1>
@@ -16,7 +17,8 @@
         <h2>Новая полка</h2>
         <form th:action="@{/shelves/create}" method="post" class="shelf-new-form">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <input type="text" name="name" maxlength="120" placeholder="Название" required/>
+            <label for="shelf-name" class="visually-hidden">Название полки</label>
+            <input type="text" name="name" id="shelf-name" maxlength="120" placeholder="Название" required/>
             <button type="submit">Создать</button>
         </form>
     </section>

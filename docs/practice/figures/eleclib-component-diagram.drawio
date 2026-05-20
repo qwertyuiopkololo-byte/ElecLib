@@ -1,0 +1,110 @@
+<mxfile host="app.diagrams.net" agent="ElecLib" version="22.1.0" type="device">
+  <diagram id="components" name="Diagramma komponentov">
+    <mxGraphModel dx="680" dy="920" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" page="1" pageScale="1" pageWidth="680" pageHeight="920" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="&#1044;&#1080;&#1072;&#1075;&#1088;&#1072;&#1084;&#1084;&#1072; &#1082;&#1086;&#1084;&#1087;&#1086;&#1085;&#1077;&#1085;&#1090;&#1086;&#1074; ElecLib" style="text;html=1;strokeColor=none;fillColor=none;fontSize=16;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="30" y="12" width="620" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="app" value="&#1042;&#1077;&#1073;-&#1087;&#1088;&#1080;&#1083;&#1086;&#1078;&#1077;&#1085;&#1080;&#1077; ElecLib (Spring Boot + Thymeleaf)" style="swimlane;whiteSpace=wrap;html=1;startSize=36;fillColor=#f5f5f5;strokeColor=#333333;rounded=1;arcSize=8;fontStyle=1;fontSize=13;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="20" y="50" width="640" height="820" as="geometry"/>
+        </mxCell>
+        <mxCell id="lay1" value="&#1057;&#1083;&#1086;&#1081; View" style="swimlane;horizontal=0;whiteSpace=wrap;html=1;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" vertex="1" parent="app">
+          <mxGeometry x="25" y="50" width="590" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v1" value="layout.html" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="lay1">
+          <mxGeometry x="20" y="38" width="88" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="v2" value="books/list" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="lay1">
+          <mxGeometry x="118" y="38" width="88" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="v3" value="book-card" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="lay1">
+          <mxGeometry x="216" y="38" width="88" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="v4" value="read.html" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="lay1">
+          <mxGeometry x="314" y="38" width="88" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="v5" value="read-comic.html" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="lay1">
+          <mxGeometry x="412" y="38" width="88" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="v6" value="comics/list&#xa;admin/book-form" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="lay1">
+          <mxGeometry x="510" y="38" width="70" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="lay2" value="&#1057;&#1083;&#1086;&#1081; Controller / Service (&#1072;&#1085;&#1072;&#1083;&#1086;&#1075; ViewModel)" style="swimlane;horizontal=0;whiteSpace=wrap;html=1;startSize=26;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=12;" vertex="1" parent="app">
+          <mxGeometry x="25" y="220" width="590" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="c1" value="BookController" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="lay2">
+          <mxGeometry x="25" y="38" width="100" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="c2" value="AdminController" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="lay2">
+          <mxGeometry x="135" y="38" width="100" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="c3" value="ComicController" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="lay2">
+          <mxGeometry x="245" y="38" width="100" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="s1" value="BookService" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="lay2">
+          <mxGeometry x="355" y="38" width="88" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="s2" value="ComicPdfStorage&#xa;Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="lay2">
+          <mxGeometry x="453" y="38" width="88" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="s3" value="ReaderToc" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="lay2">
+          <mxGeometry x="135" y="98" width="88" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="s4" value="ReadingPosition&#xa;Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="lay2">
+          <mxGeometry x="235" y="98" width="105" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="lay3" value="&#1057;&#1083;&#1086;&#1081; Model" style="swimlane;horizontal=0;whiteSpace=wrap;html=1;startSize=26;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=12;" vertex="1" parent="app">
+          <mxGeometry x="25" y="410" width="590" height="125" as="geometry"/>
+        </mxCell>
+        <mxCell id="m1" value="Book" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="lay3">
+          <mxGeometry x="50" y="42" width="75" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="m2" value="BookCardDto" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="lay3">
+          <mxGeometry x="145" y="42" width="90" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="m3" value="ReaderTocEntryDto" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="lay3">
+          <mxGeometry x="255" y="42" width="115" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="m4" value="ReadingPosition" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="lay3">
+          <mxGeometry x="390" y="42" width="105" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="lay4" value="&#1057;&#1083;&#1086;&#1081; &#1076;&#1072;&#1085;&#1085;&#1099;&#1093;" style="swimlane;horizontal=0;whiteSpace=wrap;html=1;startSize=26;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=12;" vertex="1" parent="app">
+          <mxGeometry x="25" y="555" width="590" height="195" as="geometry"/>
+        </mxCell>
+        <mxCell id="r1" value="BookRepository" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="lay4">
+          <mxGeometry x="40" y="42" width="105" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="r2" value="ReadingPosition&#xa;Repository" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="lay4">
+          <mxGeometry x="160" y="42" width="115" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="r3" value="SupabaseClient" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="lay4">
+          <mxGeometry x="290" y="42" width="105" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="db" value="Supabase&#xa;&#1041;&#1072;&#1079;&#1072; &#1076;&#1072;&#1085;&#1085;&#1099;&#1093;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" vertex="1" parent="lay4">
+          <mxGeometry x="175" y="100" width="130" height="82" as="geometry"/>
+        </mxCell>
+        <mxCell id="pdf" value="data/comics/&#xa;PDF" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1" vertex="1" parent="lay4">
+          <mxGeometry x="400" y="100" width="120" height="82" as="geometry"/>
+        </mxCell>
+        <mxCell id="ar12" style="endArrow=classic;startArrow=classic;html=1;strokeWidth=2;strokeColor=#333333;" edge="1" parent="app" source="lay1" target="lay2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ar23" style="endArrow=classic;startArrow=classic;html=1;strokeWidth=2;strokeColor=#333333;" edge="1" parent="app" source="lay2" target="lay3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ar34" style="endArrow=classic;startArrow=classic;html=1;strokeWidth=2;strokeColor=#333333;" edge="1" parent="app" source="lay3" target="lay4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="er1" style="endArrow=classic;html=1;" edge="1" parent="app" source="r1" target="r3"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="er2" style="endArrow=classic;html=1;" edge="1" parent="app" source="r2" target="r3"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="er3" style="endArrow=classic;html=1;" edge="1" parent="app" source="r3" target="db"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="er4" style="endArrow=classic;html=1;dashed=1;" edge="1" parent="app" source="s2" target="pdf"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="520" y="530"/></Array></mxGeometry></mxCell>
+        <mxCell id="note" value="&#1057;&#1086;&#1086;&#1090;&#1074;&#1077;&#1090;&#1089;&#1090;&#1074;&#1080;&#1077; MVVM (&#1084;&#1086;&#1073;&#1080;&#1083;&#1100;&#1085;&#1086;&#1077; &#1087;&#1088;&#1080;&#1083;&#1086;&#1078;&#1077;&#1085;&#1080;&#1077;):&#xa;View &#8596; ViewModel &#8596; Model &#8596; Firebase / &#1041;&#1044;" style="text;html=1;fillColor=#ffffff;strokeColor=#cccccc;align=left;spacingLeft=8;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="20" y="880" width="380" height="36" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

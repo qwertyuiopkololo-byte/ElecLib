@@ -26,7 +26,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(a -> a
                         .requestMatchers("/", "/login", "/register", "/favicon.ico", "/favicon.svg",
                                 "/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/books", "/books/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/books").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/books/{bookId:\\d+}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/genres").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

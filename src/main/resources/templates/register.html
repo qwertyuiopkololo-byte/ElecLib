@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta charset="UTF-8"/>
     <title>Регистрация — ElecLib</title>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
-<body>
+<body class="auth-page">
 <header class="header">
-    <a th:href="@{/}" class="logo">Электронная библиотека</a>
+    <a th:href="@{/}" class="logo"><span class="logo-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v15M3 4c4-1 6 0 9 2 3-2 5-3 9-2v14c-4-1-6 0-9 2-3-2-5-3-9-2Z"/></svg></span><span>Электронная библиотека</span></a>
     <nav><a th:href="@{/login}">Вход</a></nav>
 </header>
 <main class="main">
@@ -17,22 +18,22 @@
         <div th:if="${#fields.hasGlobalErrors()}" class="alert error">
             <th:block th:each="err : ${#fields.globalErrors()}"><p th:text="${err}"></p></th:block>
         </div>
-        <label>Логин</label>
-        <input type="text" th:field="*{login}" required/>
+        <label for="login">Логин</label>
+        <input type="text" th:field="*{login}" id="login" required/>
         <span th:if="${#fields.hasErrors('login')}" th:errors="*{login}" class="error-text"></span>
-        <label>Пароль</label>
+        <label for="password">Пароль</label>
         <div class="password-wrap">
-            <input type="password" th:field="*{password}" required/>
+            <input type="password" th:field="*{password}" id="password" required/>
             <button type="button" class="password-toggle" aria-label="Показать пароль" title="Показать пароль">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
         </div>
         <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-text"></span>
-        <label>Имя</label>
-        <input type="text" th:field="*{firstName}" required/>
+        <label for="firstName">Имя</label>
+        <input type="text" th:field="*{firstName}" id="firstName" required/>
         <span th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="error-text"></span>
-        <label>Фамилия</label>
-        <input type="text" th:field="*{lastName}" required/>
+        <label for="lastName">Фамилия</label>
+        <input type="text" th:field="*{lastName}" id="lastName" required/>
         <span th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="error-text"></span>
         <button type="submit">Зарегистрироваться</button>
     </form>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8"/>
+    <title>ElecLib — Таблица 3.1. Unit-тесты (JUnit)</title>
+    <style>
+        body { font-family: 'Segoe UI', system-ui, sans-serif; max-width: 1100px; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; line-height: 1.45; }
+        h1 { font-size: 1.5rem; color: #2c3e50; }
+        p { margin: 0.75rem 0; }
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.85rem; }
+        th, td { border: 1px solid #bdc3c7; padding: 0.45rem 0.55rem; vertical-align: top; text-align: left; }
+        th { background: #ecf0f1; font-weight: 600; }
+        tr:nth-child(even) { background: #fafafa; }
+        caption { caption-side: top; text-align: left; font-weight: bold; margin-bottom: 0.5rem; font-size: 1rem; }
+        .ok { color: #27ae60; font-weight: 600; }
+        .meta { color: #7f8c8d; font-size: 0.85rem; }
+        code { font-size: 0.82em; background: #f4f4f4; padding: 0.1em 0.35em; border-radius: 3px; }
+        .section { background: #e8f4fc; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<h1>Задание 7. Автоматизированное тестирование (JUnit 5)</h1>
+<p>Модуль ElecLib: <strong>JUnit 5</strong>, <strong>Mockito</strong>, <strong>JaCoCo</strong>. Запуск: <code>mvn test</code>. Всего <strong>31</strong> тест, <strong>0</strong> падений.</p>
+<p class="meta">Классы: <code>ReaderTocTest</code>, <code>ReaderPagingTest</code>, <code>ComicPdfStorageServiceTest</code>, <code>BookComicAndCoverTest</code>, <code>BookServiceCardFeaturesTest</code>, <code>ReadingPositionServiceTest</code>, <code>SubscriptionServiceTest</code>, <code>BookServiceRecommendationTest</code>.</p>
+
+<table>
+    <caption>Таблица 3.1 – Тестовый план (unit-тесты)</caption>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Функция</th>
+            <th>Входные данные</th>
+            <th>Ожидаемый результат</th>
+            <th>Фактический результат</th>
+            <th>Статус</th>
+            <th>Тип</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="section"><td colspan="7">Оглавление и постраничность (<code>ReaderToc</code>, <code>ReaderPaging</code>)</td></tr>
+        <tr>
+            <td>UT-01</td>
+            <td>Постраничность: пустой текст</td>
+            <td><code>""</code>, строка из пробелов</td>
+            <td><code>totalPages</code> = 1</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>граничный</td>
+        </tr>
+        <tr>
+            <td>UT-02</td>
+            <td>Постраничность: короткий текст</td>
+            <td>строка <code>"hello"</code></td>
+            <td><code>totalPages</code> = 1</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный</td>
+        </tr>
+        <tr>
+            <td>UT-03</td>
+            <td>Постраничность: длинный текст</td>
+            <td>~80 блоков по 120+ символов</td>
+            <td><code>totalPages</code> ≥ 2</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный</td>
+        </tr>
+        <tr>
+            <td>UT-04</td>
+            <td>Распознавание заголовков оглавления</td>
+            <td>«Глава 1», «Chapter 12», «§ 3», «### Оглавление»; обычный абзац, «глава была давно»</td>
+            <td>заголовки — <code>true</code>, прочие строки — <code>false</code></td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный / негативный</td>
+        </tr>
+        <tr>
+            <td>UT-05</td>
+            <td>Построение оглавления</td>
+            <td>текст с «Глава 1», разделителем 3000 символов, «Глава 2»</td>
+            <td>2 записи <code>ReaderTocEntryDto</code>, страницы 1 и ≥ 2</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный</td>
+        </tr>
+        <tr>
+            <td>UT-06</td>
+            <td>Номер страницы по смещению символа</td>
+            <td>страницы <code>["abc","defgh"]</code>, смещения 0, 2, 3</td>
+            <td>страницы 1, 1, 2</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный</td>
+        </tr>
+
+        <tr class="section"><td colspan="7">Комиксы PDF (<code>ComicPdfStorageService</code>)</td></tr>
+        <tr>
+            <td>UT-07</td>
+            <td>Проверка наличия PDF</td>
+            <td>bookId=42, файл не загружен</td>
+            <td><code>hasPdf</code> = false</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>негативный</td>
+        </tr>
+        <tr>
+            <td>UT-08</td>
+            <td>Сохранение PDF комикса</td>
+            <td>Multipart <code>application/pdf</code>, bookId=7</td>
+            <td><code>hasPdf</code> = true, файл на диске</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный</td>
+        </tr>
+        <tr>
+            <td>UT-09</td>
+            <td>Ресурс PDF при отсутствии файла</td>
+            <td>bookId=99</td>
+            <td><code>asResource</code> = null</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>негативный</td>
+        </tr>
+        <tr>
+            <td>UT-10</td>
+            <td>Ресурс PDF после сохранения</td>
+            <td>валидный PDF, bookId=3</td>
+            <td>ресурс не null, <code>exists()</code> = true</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный</td>
+        </tr>
+        <tr>
+            <td>UT-11</td>
+            <td>Отклонение не-PDF</td>
+            <td>файл <code>notes.txt</code>, <code>text/plain</code></td>
+            <td><code>IllegalArgumentException</code></td>
+            <td>исключение выброшено</td>
+            <td class="ok">пройден</td>
+            <td>негативный</td>
+        </tr>
+
+        <tr class="section"><td colspan="7">Обложки и тип контента (<code>Book</code>, <code>BookService</code>)</td></tr>
+        <tr>
+            <td>UT-12</td>
+            <td>Признак «комикс» в модели</td>
+            <td><code>contentType = COMIC</code></td>
+            <td><code>isComic()</code> = true</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный</td>
+        </tr>
+        <tr>
+            <td>UT-13</td>
+            <td>Книга не комикс</td>
+            <td><code>TEXT</code> или <code>null</code></td>
+            <td><code>isComic()</code> = false</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>негативный</td>
+        </tr>
+        <tr>
+            <td>UT-14</td>
+            <td>URL обложки в модели</td>
+            <td><code>coverUrl = https://example.com/cover.jpg</code></td>
+            <td>поле сохранено в <code>Book</code></td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный</td>
+        </tr>
+        <tr>
+            <td>UT-15</td>
+            <td>Обложка в карточке каталога</td>
+            <td>книга с <code>coverUrl</code>, подписчик (mock)</td>
+            <td><code>BookCardDto.coverUrl</code> совпадает, не комикс</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный</td>
+        </tr>
+        <tr>
+            <td>UT-16</td>
+            <td>Комикс готов к чтению</td>
+            <td><code>CONTENT_TYPE_COMIC</code>, <code>hasPdf(8)=true</code></td>
+            <td><code>comic</code> и <code>comicReady</code> = true</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный</td>
+        </tr>
+        <tr>
+            <td>UT-17</td>
+            <td>Комикс без PDF на диске</td>
+            <td>тип COMIC, <code>hasPdf=false</code></td>
+            <td><code>comic</code> = true, <code>comicReady</code> = false</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>негативный</td>
+        </tr>
+        <tr>
+            <td>UT-18</td>
+            <td>Раздел «Комиксы» в каталоге</td>
+            <td>каталог: 1 текст + 1 комикс с PDF</td>
+            <td>одна карточка, bookId комикса</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный</td>
+        </tr>
+
+        <tr class="section"><td colspan="7">Позиция чтения (<code>ReadingPositionService</code>)</td></tr>
+        <tr>
+            <td>UT-19</td>
+            <td>Последняя страница без записи</td>
+            <td>userId=1, bookId=2, БД пуста</td>
+            <td>возврат страницы 1</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>граничный</td>
+        </tr>
+        <tr>
+            <td>UT-20</td>
+            <td>Некорректная сохранённая страница</td>
+            <td><code>lastPage = 0</code> в БД</td>
+            <td>возврат 1 (защита от null/0)</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>негативный</td>
+        </tr>
+        <tr>
+            <td>UT-21</td>
+            <td>Чтение сохранённой страницы</td>
+            <td><code>lastPage = 5</code></td>
+            <td><code>getLastPage</code> = 5</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный</td>
+        </tr>
+        <tr>
+            <td>UT-22</td>
+            <td>Сохранение позиции чтения</td>
+            <td>существующая запись, новая страница 10</td>
+            <td>удаление старой + <code>save</code> новой</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный</td>
+        </tr>
+        <tr>
+            <td>UT-23</td>
+            <td>Сохранение при странице &lt; 1</td>
+            <td><code>saveLastPage(..., 0)</code></td>
+            <td>репозиторий не вызывается</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>негативный</td>
+        </tr>
+
+        <tr class="section"><td colspan="7">Подписка (<code>SubscriptionService</code>)</td></tr>
+        <tr>
+            <td>UT-24</td>
+            <td>Активная подписка</td>
+            <td><code>user = null</code></td>
+            <td><code>false</code>, без обращения к БД</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>негативный</td>
+        </tr>
+        <tr>
+            <td>UT-25</td>
+            <td>Активная подписка</td>
+            <td>status=active, даты в будущем</td>
+            <td><code>hasActiveSubscription</code> = true</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный</td>
+        </tr>
+        <tr>
+            <td>UT-26</td>
+            <td>Нет подписки в БД</td>
+            <td><code>Optional.empty()</code></td>
+            <td><code>false</code></td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>негативный</td>
+        </tr>
+        <tr>
+            <td>UT-27</td>
+            <td>Оформление подписки</td>
+            <td>userId=7, срок 1 месяц</td>
+            <td>запись active, <code>endDate &gt; startDate</code></td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный</td>
+        </tr>
+
+        <tr class="section"><td colspan="7">Рекомендации (<code>BookService</code>)</td></tr>
+        <tr>
+            <td>UT-28</td>
+            <td>Рекомендации по избранному</td>
+            <td>избранная книга + совпадение жанра/автора + чужая</td>
+            <td>без id=1; есть 2 и 3; нет 4; лимит ≤ 12</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный</td>
+        </tr>
+        <tr>
+            <td>UT-29</td>
+            <td>Рекомендации по истории чтения</td>
+            <td>нет избранного, <code>ReadingPosition</code> на книге 5</td>
+            <td>книга 2 в выдаче, 5 и 4 исключены</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>позитивный</td>
+        </tr>
+        <tr>
+            <td>UT-30</td>
+            <td>Приоритет недавнего жанра</td>
+            <td>две позиции чтения с разными <code>updatedAt</code></td>
+            <td>первая рекомендация — жанр недавней книги (id=2)</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>граничный</td>
+        </tr>
+        <tr>
+            <td>UT-31</td>
+            <td>Рекомендации без сигналов</td>
+            <td>пустые избранное, позиции, полки</td>
+            <td>пустой список, <code>findAll</code> не вызывается</td>
+            <td>соответствует</td>
+            <td class="ok">пройден</td>
+            <td>граничный</td>
+        </tr>
+    </tbody>
+</table>
+
+<p class="meta">Сводка: позитивных — 18, негативных — 9, граничных — 4 (в UT-04 учтены оба типа проверок в одном методе).</p>
+
+</body>
+</html>

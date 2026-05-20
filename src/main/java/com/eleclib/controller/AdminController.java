@@ -10,12 +10,14 @@ import com.eleclib.repository.BookRepository;
 import com.eleclib.repository.GenreRepository;
 import com.eleclib.repository.SubscriptionRepository;
 import com.eleclib.repository.UserRepository;
+import com.eleclib.service.ComicPdfStorageService;
 import com.eleclib.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
@@ -34,6 +36,7 @@ public class AdminController {
     private final BookRepository bookRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final UserService userService;
+    private final ComicPdfStorageService comicPdfStorageService;
 
     @GetMapping
     public String dashboard(Model model) {
@@ -113,6 +116,7 @@ public class AdminController {
         model.addAttribute("book", new Book());
         model.addAttribute("authors", authorRepository.findAll());
         model.addAttribute("genres", genreRepository.findAll());
+        model.addAttribute("hasComicPdf", false);
         return "admin/book-form";
     }
 
@@ -120,10 +124,32 @@ public class AdminController {
     public String saveBook(@ModelAttribute Book book,
                            @RequestParam Long authorId,
                            @RequestParam Long genreId,
+                           @RequestParam(defaultValue = "false") boolean comic,
+                           @RequestParam(value = "pdfFile", required = false) MultipartFile pdfFile,
                            RedirectAttributes ra) {
         book.setAuthorId(authorId);
         book.setGenreId(genreId);
-        bookRepository.save(book);
+        if (comic) {
+            book.setContentType(Book.CONTENT_TYPE_COMIC);
+            if (book.getText() == null || book.getText().isBlank()) {
+                book.setText(".");
+            }
+        } else {
+            book.setContentType(Book.CONTENT_TYPE_TEXT);
+        }
+        Book saved = bookRepository.save(book);
+        Long bookId = saved.getBookId() != null ? saved.getBookId() : book.getBookId();
+        if (comic && pdfFile != null && !pdfFile.isEmpty() && bookId != null) {
+            try {
+                comicPdfStorageService.store(bookId, pdfFile);
+            } catch (Exception e) {
+                ra.addFlashAttribute("error", "Книга сохранена, но PDF не загружен: " + e.getMessage());
+                return "redirect:/admin/books/edit/" + bookId;
+            }
+        } else if (comic && bookId != null && !comicPdfStorageService.hasPdf(bookId)) {
+            ra.addFlashAttribute("message", "Книга сохранена. Загрузите PDF при редактировании.");
+            return "redirect:/admin/books/edit/" + bookId;
+        }
         ra.addFlashAttribute("message", "Книга сохранена");
         return "redirect:/admin/books";
     }
@@ -133,6 +159,7 @@ public class AdminController {
         model.addAttribute("book", bookRepository.findById(id).orElseThrow());
         model.addAttribute("authors", authorRepository.findAll());
         model.addAttribute("genres", genreRepository.findAll());
+        model.addAttribute("hasComicPdf", comicPdfStorageService.hasPdf(id));
         return "admin/book-form";
     }
 

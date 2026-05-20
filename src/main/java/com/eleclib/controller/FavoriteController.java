@@ -31,10 +31,7 @@ public class FavoriteController {
             return "redirect:/login";
         }
         List<Book> favBooks = favoriteService.getFavoriteBooks(user.getUserId());
-        List<BookCardDto> cards = bookService.findAllAsCards(user).stream()
-                .filter(c -> favBooks.stream().anyMatch(b -> b.getBookId().equals(c.getBookId())))
-                .collect(Collectors.toList());
-        cards = favBooks.stream()
+        List<BookCardDto> cards = favBooks.stream()
                 .map(b -> bookService.findBookCardById(b.getBookId(), user))
                 .collect(Collectors.toList());
         model.addAttribute("books", cards);

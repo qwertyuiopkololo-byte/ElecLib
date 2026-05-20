@@ -16,7 +16,7 @@ public class ReadingPositionService {
     public int getLastPage(Long userId, Long bookId) {
         return repository.findByUserIdAndBookId(userId, bookId)
                 .map(ReadingPosition::getLastPage)
-                .filter(p -> p != null && p >= 1)
+                .map(p -> Math.max(1, p))
                 .orElse(1);
     }
 

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="520" viewBox="0 0 820 520">
+  <style>
+    .title { font: bold 16px Arial, sans-serif; fill: #2c3e50; }
+    .caption { font: 12px Arial, sans-serif; fill: #7f8c8d; }
+    .nav { font: 13px Arial, sans-serif; fill: #ecf0f1; }
+    .h1 { font: bold 22px Arial, sans-serif; fill: #2c3e50; }
+    .card-title { font: bold 12px Arial, sans-serif; fill: #2c3e50; }
+    .meta { font: 10px Arial, sans-serif; fill: #7f8c8d; }
+    .btn { font: 11px Arial, sans-serif; fill: #fff; }
+  </style>
+  <rect width="820" height="520" fill="#f5f3ef"/>
+  <text x="410" y="28" text-anchor="middle" class="title">&#1056;&#1080;&#1089;&#1091;&#1085;&#1086;&#1082; 6 &#8212; &#1050;&#1072;&#1090;&#1072;&#1083;&#1086;&#1075; /books</text>
+  <text x="410" y="48" text-anchor="middle" class="caption">&#1057;&#1093;&#1077;&#1084;&#1072; &#1080;&#1085;&#1090;&#1077;&#1088;&#1092;&#1077;&#1081;&#1089;&#1072;</text>
+
+  <rect x="0" y="60" width="820" height="48" fill="#2c3e50"/>
+  <text x="24" y="90" class="nav" font-weight="bold">ElecLib</text>
+  <text x="180" y="90" class="nav">&#1050;&#1085;&#1080;&#1075;&#1080;</text>
+  <text x="250" y="90" class="nav">&#1046;&#1072;&#1085;&#1088;&#1099;</text>
+  <text x="320" y="90" class="nav">&#1048;&#1079;&#1073;&#1088;&#1072;&#1085;&#1085;&#1086;&#1077;</text>
+  <text x="410" y="90" class="nav">&#1050;&#1086;&#1084;&#1080;&#1082;&#1089;&#1099;</text>
+  <text x="500" y="90" class="nav">&#1055;&#1086;&#1083;&#1082;&#1080;</text>
+  <text x="680" y="90" class="nav">&#1042;&#1099;&#1093;&#1086;&#1076;</text>
+
+  <text x="40" y="140" class="h1">&#1050;&#1072;&#1090;&#1072;&#1083;&#1086;&#1075; &#1082;&#1085;&#1080;&#1075;</text>
+  <rect x="40" y="155" width="200" height="28" rx="4" fill="#fff" stroke="#bdc3c7"/>
+
+  <g transform="translate(40,200)">
+    <rect width="110" height="200" rx="6" fill="#fff" stroke="#eee"/>
+    <rect width="110" height="140" fill="#5d6d7e"/>
+    <text x="8" y="158" class="card-title">&#1050;&#1086;&#1084;&#1080;&#1082;&#1089;</text>
+  </g>
+  <g transform="translate(165,200)">
+    <rect width="110" height="200" rx="6" fill="#fff" stroke="#eee"/>
+    <rect width="110" height="140" fill="#3498db"/>
+    <text x="8" y="158" class="card-title">&#1050;&#1085;&#1080;&#1075;&#1072;</text>
+    <rect x="8" y="182" width="55" height="18" rx="3" fill="#3498db"/>
+    <text x="12" y="195" class="btn">&#1063;&#1080;&#1090;&#1072;&#1090;&#1100;</text>
+  </g>
+
+  <rect x="40" y="420" width="740" height="70" rx="6" fill="#fff" stroke="#3498db" stroke-dasharray="4"/>
+  <text x="410" y="462" text-anchor="middle" class="meta">&#1052;&#1086;&#1078;&#1085;&#1086; &#1079;&#1072;&#1084;&#1077;&#1085;&#1080;&#1090;&#1100; &#1089;&#1082;&#1088;&#1080;&#1085;&#1096;&#1086;&#1090;&#1086;&#1084; localhost:8080/books</text>
+</svg>

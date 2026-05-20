@@ -1,6 +1,12 @@
 ### Maven ###
 target/
 
+### Local Hallmark backups, preview tools and captures ###
+.hallmark/
+
+### Comic PDF uploads ###
+data/comics/
+
 ### Local secrets (не коммитить) ###
 application-local.properties
 

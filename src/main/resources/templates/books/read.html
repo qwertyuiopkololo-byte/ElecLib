@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta charset="UTF-8"/>
     <title th:text="${book.title}">Чтение</title>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
@@ -15,19 +16,19 @@
 
         <div class="reader-nav reader-nav-top">
             <button type="button" class="btn small" id="btnPrev" disabled>← Предыдущая</button>
-            <span class="reader-page-info">Страница <input type="number" id="pageInput" min="1" value="1" /> из <span id="totalPages">1</span></span>
+            <span class="reader-page-info">Страница <input type="number" id="pageInput" min="1" value="1" aria-label="Номер страницы" /> из <span id="totalPages">1</span></span>
             <button type="button" class="btn small" id="btnGo">Перейти</button>
             <button type="button" class="btn small" id="btnNext">Следующая →</button>
             <button type="button" class="btn small" id="btnToggleToc" title="Оглавление книги">Оглавление</button>
             <button type="button" class="btn small" id="btnToggleBookmarks" title="Показать/скрыть закладки">Закладки</button>
             <button type="button" class="btn small" id="btnToggleNotes" title="Показать/скрыть заметки">Заметки</button>
             <button type="button" class="btn small" id="btnToggleReaderSettings" title="Настройки оформления">Оформление</button>
-            <form th:if="${inFavorites}" th:action="@{/books/{id}/favorite(id=${book.bookId})}" method="post" class="reader-fav-form" style="display:inline;">
+            <form th:if="${inFavorites}" th:action="@{/books/{id}/favorite(id=${book.bookId})}" method="post" class="reader-fav-form inline-form">
                 <input type="hidden" name="add" value="0"/>
                 <input type="hidden" name="returnTo" value="read"/>
                 <button type="submit" class="btn small secondary">Убрать из избранного</button>
             </form>
-            <form th:if="${!inFavorites}" th:action="@{/books/{id}/favorite(id=${book.bookId})}" method="post" class="reader-fav-form" style="display:inline;">
+            <form th:if="${!inFavorites}" th:action="@{/books/{id}/favorite(id=${book.bookId})}" method="post" class="reader-fav-form inline-form">
                 <input type="hidden" name="add" value="1"/>
                 <input type="hidden" name="returnTo" value="read"/>
                 <button type="submit" class="btn small">В избранное</button>
@@ -36,7 +37,7 @@
 
         <div class="reader-toc reader-toc-panel" id="readerToc" aria-hidden="true">
             <h3>Оглавление</h3>
-            <p id="tocEmptyMsg" class="reader-toc-hint" th:style="${tocEntries == null || #lists.isEmpty(tocEntries)} ? '' : 'display:none'">Заголовки разделов в тексте не найдены.</p>
+            <p id="tocEmptyMsg" class="reader-toc-hint" th:classappend="${tocEntries != null && !#lists.isEmpty(tocEntries)} ? ' hidden' : ''">Заголовки разделов в тексте не найдены.</p>
             <ul id="tocList" class="toc-list">
                 <li th:each="e : ${tocEntries}" class="toc-item"
                     th:attr="data-page=${e.pageNumber}">
@@ -79,16 +80,16 @@
         <div class="reader-settings reader-settings-panel" id="readerSettings" aria-hidden="true">
             <h3>Оформление</h3>
             <div class="reader-setting-group">
-                <label>Тема:</label>
-                <div class="reader-option-btns" role="group" aria-label="Тема">
+                <span class="reader-setting-label" id="reader-theme-label">Тема:</span>
+                <div class="reader-option-btns" role="group" aria-labelledby="reader-theme-label">
                     <button type="button" class="btn small reader-opt" data-setting="theme" data-value="light">Светлая</button>
                     <button type="button" class="btn small reader-opt" data-setting="theme" data-value="dark">Тёмная</button>
                     <button type="button" class="btn small reader-opt" data-setting="theme" data-value="sepia">Сепия</button>
                 </div>
             </div>
             <div class="reader-setting-group">
-                <label>Шрифт:</label>
-                <select id="readerFontSelect" class="reader-select" aria-label="Шрифт">
+                <label for="readerFontSelect">Шрифт:</label>
+                <select id="readerFontSelect" class="reader-select">
                     <option value="system">Системный</option>
                     <option value="georgia">Georgia</option>
                     <option value="times">Times New Roman</option>
@@ -97,8 +98,8 @@
                 </select>
             </div>
             <div class="reader-setting-group">
-                <label>Размер шрифта:</label>
-                <div class="reader-option-btns" role="group" aria-label="Размер">
+                <span class="reader-setting-label" id="reader-size-label">Размер шрифта:</span>
+                <div class="reader-option-btns" role="group" aria-labelledby="reader-size-label">
                     <button type="button" class="btn small reader-opt" data-setting="size" data-value="small">Мелкий</button>
                     <button type="button" class="btn small reader-opt" data-setting="size" data-value="medium">Средний</button>
                     <button type="button" class="btn small reader-opt" data-setting="size" data-value="large">Крупный</button>
@@ -117,8 +118,8 @@
     </div>
 </main>
 
-<textarea id="fullTextSource" style="display:none" th:text="${book.text}"></textarea>
-<div id="readerConfig" style="display:none"
+<textarea id="fullTextSource" class="hidden" th:text="${book.text}"></textarea>
+<div id="readerConfig" class="hidden"
      th:attr="data-save-url=@{/books/{id}/reading-position(id=${book.bookId})},
               data-initial-page=${lastPage},
               data-bookmarks-add-url=@{/books/{id}/bookmarks(id=${book.bookId})},

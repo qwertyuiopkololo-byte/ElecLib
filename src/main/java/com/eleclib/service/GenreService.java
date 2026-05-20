@@ -16,8 +16,4 @@ public class GenreService {
     public List<Genre> findAll() {
         return genreRepository.findAll();
     }
-
-    public Genre findById(Long id) {
-        return genreRepository.findById(id).orElse(null);
-    }
 }
