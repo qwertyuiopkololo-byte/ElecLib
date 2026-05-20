@@ -15,4 +15,6 @@ public class Book {
     private String text;
     private Long authorId;
     private Long genreId;
+    /** URL изображения обложки (колонка cover_url в Supabase) */
+    private String coverUrl;
 }
