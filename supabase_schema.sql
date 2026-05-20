@@ -34,11 +34,14 @@ CREATE TABLE IF NOT EXISTS books (
   description text,
   text text NOT NULL,
   cover_url text,
+  content_type text NOT NULL DEFAULT 'text' CHECK (content_type IN ('text', 'comic')),
   author_id bigint NOT NULL REFERENCES authors(author_id) ON DELETE RESTRICT,
   genre_id bigint NOT NULL REFERENCES genres(genre_id) ON DELETE RESTRICT
 );
 
 ALTER TABLE books ADD COLUMN IF NOT EXISTS cover_url text;
+ALTER TABLE books ADD COLUMN IF NOT EXISTS content_type text NOT NULL DEFAULT 'text'
+  CHECK (content_type IN ('text', 'comic'));
 
 CREATE TABLE IF NOT EXISTS subscriptions (
   subscription_id bigserial PRIMARY KEY,

@@ -20,4 +20,7 @@ public class BookCardDto {
     private boolean hasProgress;
     private Integer lastPosition;
     private boolean subscriptionRequired;
+    private boolean comic;
+    /** PDF загружен на сервер (для комиксов) */
+    private boolean comicReady;
 }

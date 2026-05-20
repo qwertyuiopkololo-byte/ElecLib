@@ -20,6 +20,7 @@
         <h3><a th:href="@{/books/{id}(id=${book.bookId})}" th:text="${book.title}">Title</a></h3>
         <div class="meta">
             <span th:text="${book.authorName}">Author</span> · <span th:text="${book.genreName}">Genre</span>
+            <span th:if="${book.comic}" class="comic-badge comic-badge-inline">PDF</span>
         </div>
         <div class="rating" th:if="${book.reviewCount > 0}">
             ★ <span th:text="${#numbers.formatDecimal(book.averageRating, 1, 1)}">0</span>
@@ -43,6 +44,26 @@
                 <input type="hidden" name="returnTo" value="favorites"/>
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <button type="submit" class="btn secondary">В избранное</button>
+            </form>
+        </div>
+        <div th:if="${actions == 'comic'}" class="card-actions">
+            <a th:href="@{/books/{id}/read(id=${book.bookId})}" class="btn"
+               th:if="${!book.subscriptionRequired && book.comicReady}">Читать</a>
+            <span th:if="${book.subscriptionRequired}" class="btn secondary" style="opacity:0.85">Нужна подписка</span>
+            <span th:if="${!book.subscriptionRequired && !book.comicReady}" class="btn secondary" style="opacity:0.7">PDF не загружен</span>
+            <form th:action="@{/books/{id}/favorite(id=${book.bookId})}" method="post" style="display:inline;"
+                  th:if="${!book.inFavorites}">
+                <input type="hidden" name="add" value="1"/>
+                <input type="hidden" name="returnTo" value="comics"/>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn secondary">В избранное</button>
+            </form>
+            <form th:action="@{/books/{id}/favorite(id=${book.bookId})}" method="post" style="display:inline;"
+                  th:if="${book.inFavorites}">
+                <input type="hidden" name="add" value="0"/>
+                <input type="hidden" name="returnTo" value="comics"/>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn secondary">Из избранного</button>
             </form>
         </div>
         <div th:if="${actions == 'shelf' && shelf != null}" class="card-actions">

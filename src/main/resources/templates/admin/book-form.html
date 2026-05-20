@@ -10,8 +10,10 @@
 <main class="main">
     <h1 th:text="${book.bookId != null && book.bookId > 0 ? 'Редактировать книгу' : 'Новая книга'}">Книга</h1>
     <p><a th:href="@{/admin/books}" class="btn secondary">← Назад</a></p>
-    <form th:action="@{/admin/books}" th:object="${book}" method="post">
+    <div th:if="${error}" class="alert error" th:text="${error}"></div>
+    <form th:action="@{/admin/books}" th:object="${book}" method="post" enctype="multipart/form-data">
         <input type="hidden" th:field="*{bookId}"/>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <label>Название</label>
         <input type="text" th:field="*{title}" required/>
         <label>Описание</label>
@@ -19,8 +21,25 @@
         <label>URL обложки</label>
         <input type="url" th:field="*{coverUrl}" placeholder="https://example.com/cover.jpg"/>
         <p class="form-hint">Ссылка на изображение (JPG, PNG, WebP). Оставьте пустым — будет показана заглушка с буквой.</p>
-        <label>Текст книги</label>
-        <textarea th:field="*{text}" style="min-height:200px" required></textarea>
+
+        <label class="checkbox-label">
+            <input type="checkbox" name="comic" value="true" th:checked="${book.comic}"/>
+            Комикс (PDF загружается на сервер, без внешней ссылки)
+        </label>
+
+        <div id="comicPdfBlock" class="comic-admin-fields">
+            <label>Файл PDF</label>
+            <input type="file" name="pdfFile" accept="application/pdf,.pdf"/>
+            <p th:if="${hasComicPdf}" class="form-hint success-hint">PDF уже загружен. Выберите новый файл, чтобы заменить.</p>
+            <p th:if="${!hasComicPdf}" class="form-hint">Загрузите PDF с компьютера (до 100 МБ).</p>
+        </div>
+
+        <div id="textBookBlock">
+            <label id="textLabel">Текст книги</label>
+            <textarea th:field="*{text}" id="bookTextArea" style="min-height:200px"></textarea>
+            <p id="textHintComic" class="form-hint" style="display:none">Для комикса текст не нужен — можно оставить пустым.</p>
+        </div>
+
         <label>Автор</label>
         <select name="authorId" required>
             <option th:each="a : ${authors}" th:value="${a.authorId}" th:text="${a.fullName}" th:selected="${book.authorId != null && book.authorId == a.authorId}"></option>
@@ -32,6 +51,24 @@
         <button type="submit">Сохранить</button>
     </form>
 </main>
+<script>
+(function() {
+    var comicCb = document.querySelector('input[name="comic"]');
+    var comicBlock = document.getElementById('comicPdfBlock');
+    var textArea = document.getElementById('bookTextArea');
+    var textLabel = document.getElementById('textLabel');
+    var textHint = document.getElementById('textHintComic');
+    function sync() {
+        var comic = comicCb && comicCb.checked;
+        if (comicBlock) comicBlock.style.display = comic ? 'block' : 'none';
+        if (textArea) textArea.required = !comic;
+        if (textLabel) textLabel.textContent = comic ? 'Текст (необязательно)' : 'Текст книги';
+        if (textHint) textHint.style.display = comic ? 'block' : 'none';
+    }
+    if (comicCb) comicCb.addEventListener('change', sync);
+    sync();
+})();
+</script>
 <div th:replace="~{fragments/footer}"></div>
 </body>
 </html>

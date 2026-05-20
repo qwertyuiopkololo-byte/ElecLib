@@ -43,6 +43,7 @@ public class BookService {
     private final ReadingShelfBookRepository readingShelfBookRepository;
     private final UserRepository userRepository;
     private final SubscriptionService subscriptionService;
+    private final ComicPdfStorageService comicPdfStorageService;
 
     private static final double WEIGHT_FAVORITE = 1.0;
     private static final double WEIGHT_SHELF_WANT = 0.5;
@@ -70,6 +71,28 @@ public class BookService {
 
     public List<BookCardDto> findAllAsCards(User currentUser) {
         return toCardDtos(bookRepository.findAll(), currentUser);
+    }
+
+    /** Все комиксы в каталоге (content_type = comic). */
+    public List<BookCardDto> findComicsAsCards(User currentUser) {
+        return toCardDtos(
+                bookRepository.findAll().stream().filter(Book::isComic).toList(),
+                currentUser);
+    }
+
+    /** Рекомендации среди комиксов для страницы /comics. */
+    public List<BookCardDto> getRecommendedComics(User user, int limit) {
+        if (user == null || limit <= 0) {
+            return List.of();
+        }
+        Set<Long> comicIds = bookRepository.findAll().stream()
+                .filter(Book::isComic)
+                .map(Book::getBookId)
+                .collect(Collectors.toSet());
+        return getRecommendedBooks(user, limit * 3).stream()
+                .filter(c -> comicIds.contains(c.getBookId()))
+                .limit(limit)
+                .toList();
     }
 
     public Book findById(Long id) {
@@ -315,6 +338,8 @@ public class BookService {
                     .hasProgress(false)
                     .lastPosition(0)
                     .subscriptionRequired(!hasSubscription)
+                    .comic(b.isComic())
+                    .comicReady(b.isComic() && comicPdfStorageService.hasPdf(b.getBookId()))
                     .build();
         }).collect(Collectors.toList());
     }

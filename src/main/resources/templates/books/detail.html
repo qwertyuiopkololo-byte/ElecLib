@@ -10,6 +10,7 @@
 <main class="main">
     <div th:if="${message}" class="alert success" th:text="${message}"></div>
     <div th:if="${error}" class="alert error" th:text="${error}"></div>
+    <div th:if="${param.comicMissing}" class="alert error">PDF комикса ещё не загружен. Обратитесь к администратору.</div>
     <div class="book-detail">
         <div class="book-detail-header">
             <div class="book-detail-cover">
@@ -27,12 +28,14 @@
         <h1 class="title" th:text="${book.title}">Title</h1>
         <p class="author">Автор: <a th:href="@{/books(q=${card.authorName})}" th:text="${card.authorName}">Author</a></p>
         <p class="genre">Жанр: <a th:href="@{/books(genreId=${card.genreId})}" th:text="${card.genreName}">Genre</a></p>
+        <p th:if="${book.comic}" class="comic-badge">Комикс (PDF)</p>
         <div th:if="${card.reviewCount > 0}" class="rating">★ <span th:text="${#numbers.formatDecimal(card.averageRating, 1, 1)}">0</span> (<span th:text="${card.reviewCount}">0</span> отзывов)</div>
         <div th:if="${book.description}" class="description" th:text="${book.description}"></div>
         <div th:if="${user != null}">
-            <th:block th:if="${hasAccess}">
-                <a th:href="@{/books/{id}/read(id=${book.bookId})}" class="btn">Читать</a>
+            <th:block th:if="${hasAccess && comicReady}">
+                <a th:href="@{/books/{id}/read(id=${book.bookId})}" class="btn" th:text="${book.comic ? 'Читать комикс' : 'Читать'}">Читать</a>
             </th:block>
+            <span th:if="${hasAccess && !comicReady}" class="btn secondary" style="opacity:0.7;cursor:not-allowed">PDF не загружен</span>
             <th:block th:if="${!hasAccess}">
                 <a th:href="@{/subscription?required=1}" class="btn">Оформить подписку для чтения</a>
             </th:block>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${book.title}">Комикс</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body class="reader-page comic-reader-page">
+<div th:replace="~{fragments/header}"></div>
+<main class="main reader-container reader-container-comic">
+    <div id="readerView" class="reader-view">
+        <p><a th:href="@{/books/{id}(id=${book.bookId})}" class="btn secondary">← К книге</a></p>
+        <h1 th:text="${book.title}">Title</h1>
+        <p class="comic-badge">Комикс · PDF</p>
+
+        <div class="reader-nav reader-nav-top">
+            <button type="button" class="btn small" id="btnPrev" disabled>← Предыдущая</button>
+            <span class="reader-page-info">Страница <input type="number" id="pageInput" min="1" value="1" /> из <span id="totalPages">—</span></span>
+            <button type="button" class="btn small" id="btnGo">Перейти</button>
+            <button type="button" class="btn small" id="btnNext" disabled>Следующая →</button>
+            <button type="button" class="btn small" id="btnToggleBookmarks">Закладки</button>
+            <form th:if="${inFavorites}" th:action="@{/books/{id}/favorite(id=${book.bookId})}" method="post" class="reader-fav-form" style="display:inline;">
+                <input type="hidden" name="add" value="0"/>
+                <input type="hidden" name="returnTo" value="read"/>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn small secondary">Убрать из избранного</button>
+            </form>
+            <form th:if="${!inFavorites}" th:action="@{/books/{id}/favorite(id=${book.bookId})}" method="post" class="reader-fav-form" style="display:inline;">
+                <input type="hidden" name="add" value="1"/>
+                <input type="hidden" name="returnTo" value="read"/>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn small">В избранное</button>
+            </form>
+        </div>
+
+        <div class="reader-bookmarks reader-bookmarks-panel" id="readerBookmarks" aria-hidden="true">
+            <h3>Закладки</h3>
+            <button type="button" class="btn small" id="btnAddBookmark">Добавить на текущей странице</button>
+            <ul id="bookmarksList" class="bookmarks-list">
+                <li th:each="bm : ${bookMarks}" class="bookmark-item"
+                    th:attr="data-id=${bm.id}, data-page=${bm.pageNumber}, data-title=${bm.title != null ? bm.title : ''}">
+                    <span class="bm-page" th:text="${bm.title != null and not #strings.isEmpty(bm.title) ? bm.title + ' (стр. ' + bm.pageNumber + ')' : ('Стр. ' + bm.pageNumber)}">Стр. 1</span>
+                    <button type="button" class="btn small bm-go">Перейти</button>
+                    <button type="button" class="btn small bm-rename">Переименовать</button>
+                    <button type="button" class="btn small danger bm-del">Удалить</button>
+                </li>
+            </ul>
+        </div>
+
+        <div id="comicLoadError" class="alert error" style="display:none">Не удалось загрузить PDF.</div>
+        <div class="comic-canvas-wrap">
+            <canvas id="comicCanvas"></canvas>
+        </div>
+
+        <div class="reader-nav reader-nav-bottom">
+            <button type="button" class="btn small" id="btnPrev2" disabled>← Предыдущая</button>
+            <span class="reader-page-info">Страница <input type="number" id="pageInput2" min="1" value="1" /> из <span id="totalPages2">—</span></span>
+            <button type="button" class="btn small" id="btnGo2">Перейти</button>
+            <button type="button" class="btn small" id="btnNext2" disabled>Следующая →</button>
+        </div>
+    </div>
+</main>
+
+<div id="readerConfig" style="display:none"
+     th:attr="data-pdf-url=@{/books/{id}/comic.pdf(id=${book.bookId})},
+              data-save-url=@{/books/{id}/reading-position(id=${book.bookId})},
+              data-initial-page=${lastPage},
+              data-bookmarks-add-url=@{/books/{id}/bookmarks(id=${book.bookId})},
+              data-bookmarks-delete-url=@{/books/{id}/bookmarks/delete(id=${book.bookId})},
+              data-bookmarks-rename-url=@{/books/{id}/bookmarks/rename(id=${book.bookId})},
+              data-csrf-param=${_csrf.parameterName},
+              data-csrf-token=${_csrf.token}"></div>
+
+<div th:replace="~{fragments/footer}"></div>
+<script th:inline="javascript">
+(function() {
+    var config = document.getElementById('readerConfig');
+    var pdfUrl = config.getAttribute('data-pdf-url');
+    var saveUrl = config.getAttribute('data-save-url');
+    var initialPage = parseInt(config.getAttribute('data-initial-page') || '1', 10) || 1;
+    var bookmarksAddUrl = config.getAttribute('data-bookmarks-add-url');
+    var bookmarksDeleteUrl = config.getAttribute('data-bookmarks-delete-url');
+    var bookmarksRenameUrl = config.getAttribute('data-bookmarks-rename-url');
+    var csrfParam = config.getAttribute('data-csrf-param');
+    var csrfToken = config.getAttribute('data-csrf-token');
+
+    var pdfDoc = null;
+    var totalPages = 0;
+    var currentPage = 1;
+    var canvas = document.getElementById('comicCanvas');
+    var ctx = canvas.getContext('2d');
+    var renderTask = null;
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    function postForm(url, params) {
+        var body = new URLSearchParams(params);
+        body.append(csrfParam, csrfToken);
+        return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body });
+    }
+
+    function savePosition() {
+        if (!saveUrl || currentPage < 1) return;
+        var url = saveUrl + '?page=' + currentPage + '&' + csrfParam + '=' + encodeURIComponent(csrfToken);
+        fetch(url, { method: 'POST' });
+    }
+
+    function updateNav() {
+        ['', '2'].forEach(function(s) {
+            var prev = document.getElementById('btnPrev' + s);
+            var next = document.getElementById('btnNext' + s);
+            var inp = document.getElementById('pageInput' + s);
+            var tot = document.getElementById('totalPages' + s);
+            if (prev) prev.disabled = currentPage <= 1;
+            if (next) next.disabled = currentPage >= totalPages;
+            if (inp) inp.value = currentPage;
+            if (tot) tot.textContent = totalPages || '—';
+        });
+    }
+
+    function renderPage(num) {
+        if (!pdfDoc) return Promise.resolve();
+        return pdfDoc.getPage(num).then(function(page) {
+            var wrap = document.querySelector('.comic-canvas-wrap');
+            var maxW = wrap ? wrap.clientWidth - 16 : 800;
+            var viewport = page.getViewport({ scale: 1 });
+            var scale = Math.min(maxW / viewport.width, 2);
+            viewport = page.getViewport({ scale: scale });
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            if (renderTask) renderTask.cancel();
+            renderTask = page.render({ canvasContext: ctx, viewport: viewport });
+            return renderTask.promise;
+        });
+    }
+
+    function goToPage(num) {
+        num = Math.max(1, Math.min(totalPages, num));
+        if (num === currentPage && pdfDoc) return;
+        currentPage = num;
+        updateNav();
+        renderPage(currentPage).then(savePosition);
+    }
+
+    function bindNav(btnId, delta) {
+        var el = document.getElementById(btnId);
+        if (el) el.addEventListener('click', function() { goToPage(currentPage + delta); });
+    }
+    bindNav('btnPrev', -1);
+    bindNav('btnNext', 1);
+    bindNav('btnPrev2', -1);
+    bindNav('btnNext2', 1);
+
+    function bindGo(btnId, inpId) {
+        var btn = document.getElementById(btnId);
+        var inp = document.getElementById(inpId);
+        if (!btn || !inp) return;
+        btn.addEventListener('click', function() { goToPage(parseInt(inp.value, 10) || 1); });
+        inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') goToPage(parseInt(inp.value, 10) || 1); });
+    }
+    bindGo('btnGo', 'pageInput');
+    bindGo('btnGo2', 'pageInput2');
+
+    document.getElementById('btnToggleBookmarks').addEventListener('click', function() {
+        var p = document.getElementById('readerBookmarks');
+        var open = p.getAttribute('aria-hidden') === 'true';
+        p.setAttribute('aria-hidden', open ? 'false' : 'true');
+    });
+
+    document.getElementById('btnAddBookmark').addEventListener('click', function() {
+        var title = prompt('Название закладки (необязательно):', '');
+        postForm(bookmarksAddUrl, { page: String(currentPage), title: title || '' })
+            .then(function() { location.reload(); });
+    });
+
+    document.getElementById('bookmarksList').addEventListener('click', function(e) {
+        var li = e.target.closest('.bookmark-item');
+        if (!li) return;
+        var id = li.getAttribute('data-id');
+        if (e.target.classList.contains('bm-go')) {
+            goToPage(parseInt(li.getAttribute('data-page'), 10));
+        } else if (e.target.classList.contains('bm-rename')) {
+            var t = prompt('Новое название:', li.getAttribute('data-title') || '');
+            if (t !== null) postForm(bookmarksRenameUrl, { bookmarkId: id, title: t }).then(function() { location.reload(); });
+        } else if (e.target.classList.contains('bm-del')) {
+            if (confirm('Удалить закладку?')) postForm(bookmarksDeleteUrl, { bookmarkId: id }).then(function() { location.reload(); });
+        }
+    });
+
+    pdfjsLib.getDocument(pdfUrl).promise.then(function(doc) {
+        pdfDoc = doc;
+        totalPages = doc.numPages;
+        currentPage = Math.min(Math.max(1, initialPage), totalPages);
+        updateNav();
+        return renderPage(currentPage);
+    }).catch(function() {
+        document.getElementById('comicLoadError').style.display = 'block';
+    });
+
+    window.addEventListener('resize', function() {
+        if (pdfDoc) renderPage(currentPage);
+    });
+})();
+</script>
+</body>
+</html>

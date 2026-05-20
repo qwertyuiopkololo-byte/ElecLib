@@ -56,6 +56,16 @@ form button[type="submit"]:hover, .btn:hover { background: #2980b9; }
 .book-detail-info { flex: 1; min-width: 220px; }
 
 .form-hint { font-size: 0.85rem; color: #7f8c8d; margin: -0.5rem 0 0.75rem; }
+.form-hint.success-hint { color: #27ae60; }
+.checkbox-label { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0; font-weight: 500; }
+.checkbox-label input { width: auto; max-width: none; margin: 0; }
+.comic-admin-fields { margin: 0.75rem 0 1rem; padding: 0.75rem; background: #f8f9fa; border-radius: 6px; border: 1px solid #eee; }
+.comic-badge { display: inline-block; font-size: 0.85rem; color: #6c3483; background: #f4ecf7; padding: 0.2rem 0.5rem; border-radius: 4px; margin: 0.25rem 0 0.5rem; }
+.comic-badge-inline { margin-left: 0.35rem; font-size: 0.75rem; vertical-align: middle; }
+.section-intro { color: #7f8c8d; margin: -0.5rem 0 1.25rem; max-width: 42rem; }
+.reader-container-comic { max-width: 900px; }
+.comic-canvas-wrap { display: flex; justify-content: center; padding: 1rem 0; min-height: 200px; background: #1a1a1a; border-radius: 8px; margin: 1rem 0; }
+.comic-canvas-wrap canvas { max-width: 100%; height: auto; box-shadow: 0 2px 12px rgba(0,0,0,0.4); }
 
 .genre-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; }
 .genre-card { display: block; background: #fff; padding: 1rem; border-radius: 8px; text-align: center; text-decoration: none; color: #2c3e50; border: 1px solid #eee; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Комиксы — ElecLib</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+<main class="main">
+    <h1>Комиксы</h1>
+    <div th:if="${#lists.isEmpty(books)}" class="alert">Комиксов пока нет.</div>
+    <div class="book-grid book-grid-covers" th:if="${!#lists.isEmpty(books)}">
+        <th:block th:each="bookCard : ${books}">
+            <div th:replace="~{fragments/book-card :: card(book=${bookCard}, user=${user}, actions='comic', shelf=null)}"></div>
+        </th:block>
+    </div>
+    <section th:if="${recommendedBooks != null && !#lists.isEmpty(recommendedBooks)}" class="recommended-section">
+        <h2>Может понравиться</h2>
+        <div class="book-grid book-grid-covers">
+            <th:block th:each="bookCard : ${recommendedBooks}">
+                <div th:replace="~{fragments/book-card :: card(book=${bookCard}, user=${user}, actions='comic', shelf=null)}"></div>
+            </th:block>
+        </div>
+    </section>
+</main>
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

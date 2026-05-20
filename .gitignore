@@ -1,6 +1,9 @@
 ### Maven ###
 target/
 
+### Comic PDF uploads ###
+data/comics/
+
 ### Local secrets (не коммитить) ###
 application-local.properties
 
