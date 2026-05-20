@@ -99,7 +99,16 @@ body.reader-page:not([data-reader-theme]) .main.reader-container { background: t
 .reader-view[data-size="medium"] .reader-content { font-size: 1.1rem; }
 .reader-view[data-size="large"] .reader-content { font-size: 1.25rem; }
 
-/* Panels: bookmarks, notes, settings */
+/* Panels: toc, bookmarks, notes, settings */
+.reader-toc.reader-toc-panel[aria-hidden="true"] { display: none; }
+.reader-toc { margin: 0.75rem 0; padding: 0.75rem; background: #f8f9fa; border-radius: 6px; border: 1px solid #eee; max-height: 320px; overflow-y: auto; }
+.reader-toc h3 { margin: 0 0 0.5rem; font-size: 1rem; color: #2c3e50; }
+.reader-toc-hint { margin: 0; font-size: 0.9rem; color: #7f8c8d; }
+.toc-list { list-style: none; margin: 0; padding: 0; }
+.toc-item { display: flex; align-items: center; flex-wrap: wrap; gap: 0.35rem; padding: 0.35rem 0; border-bottom: 1px solid #eee; }
+.toc-item:last-child { border-bottom: none; }
+.toc-item .toc-title { flex: 1 1 12rem; min-width: 0; font-size: 0.95rem; }
+
 .reader-bookmarks.reader-bookmarks-panel[aria-hidden="true"] { display: none; }
 .reader-bookmarks { margin: 0.75rem 0; padding: 0.75rem; background: #f8f9fa; border-radius: 6px; border: 1px solid #eee; }
 .reader-bookmarks h3 { margin: 0 0 0.5rem; font-size: 1rem; color: #2c3e50; }
@@ -130,12 +139,15 @@ body.reader-page:not([data-reader-theme]) .main.reader-container { background: t
 .reader-select { padding: 0.35rem 0.5rem; border: 1px solid #bdc3c7; border-radius: 4px; font-size: 0.9rem; min-width: 160px; }
 
 /* Theme variants for panels */
+body.reader-page[data-reader-theme="light"] .reader-toc,
 body.reader-page[data-reader-theme="light"] .reader-bookmarks,
 body.reader-page[data-reader-theme="light"] .reader-notes,
 body.reader-page[data-reader-theme="light"] .reader-settings { background: #f2f0ec; border-color: #e8e4df; }
+body.reader-page[data-reader-theme="dark"] .reader-toc,
 body.reader-page[data-reader-theme="dark"] .reader-bookmarks,
 body.reader-page[data-reader-theme="dark"] .reader-notes,
 body.reader-page[data-reader-theme="dark"] .reader-settings { background: #383632; border-color: #45433e; color: #d2cfc9; }
+body.reader-page[data-reader-theme="sepia"] .reader-toc,
 body.reader-page[data-reader-theme="sepia"] .reader-bookmarks,
 body.reader-page[data-reader-theme="sepia"] .reader-notes,
 body.reader-page[data-reader-theme="sepia"] .reader-settings { background: #e8e0d4; border-color: #ddd6cb; color: #4a443c; }

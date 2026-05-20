@@ -14,6 +14,7 @@ import com.eleclib.service.ReadingNoteService;
 import com.eleclib.service.ReadingPositionService;
 import com.eleclib.service.ReadingShelfService;
 import com.eleclib.service.UserService;
+import com.eleclib.util.ReaderToc;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -108,6 +109,7 @@ public class BookController {
         model.addAttribute("bookMarks", bookMarkService.getBookmarks(user.getUserId(), id));
         model.addAttribute("readingNotes", readingNoteService.getNotes(user.getUserId(), id));
         model.addAttribute("inFavorites", favoriteService.isFavorite(user.getUserId(), id));
+        model.addAttribute("tocEntries", ReaderToc.build(book.getText()));
         return "books/read";
     }
 
