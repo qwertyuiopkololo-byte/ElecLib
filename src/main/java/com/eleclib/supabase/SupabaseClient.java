@@ -1,13 +1,15 @@
 package com.eleclib.supabase;
 
 import com.eleclib.config.SupabaseConfig.SupabaseProperties;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.time.Instant;
-import jakarta.annotation.PostConstruct;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpEntity;
@@ -21,7 +23,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
-import java.util.Map;
 
 
 @Component
@@ -34,16 +35,6 @@ public class SupabaseClient {
             .registerModule(new JavaTimeModule())
             .registerModule(new SimpleModule().addDeserializer(Instant.class, new LenientInstantDeserializer()))
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
-
-    @PostConstruct
-    void validateSupabaseUrl() {
-        String u = supabaseProperties.getUrl();
-        if (u == null || u.isBlank() || !(u.startsWith("http://") || u.startsWith("https://"))) {
-            throw new IllegalStateException(
-                    "supabase.url пустой или неверный. Задайте SUPABASE_URL/SUPABASE_KEY или создайте "
-                            + "src/main/resources/application-local.properties по образцу application.properties.example.");
-        }
-    }
 
     private String baseUrl() {
         return supabaseProperties.getUrl() + "/rest/v1";
@@ -98,8 +89,29 @@ public class SupabaseClient {
     }
 
     @SneakyThrows
+    private Map<String, Object> toMap(Object body) {
+        return objectMapper.convertValue(body, new TypeReference<LinkedHashMap<String, Object>>() {});
+    }
+
+    /** Тело PATCH/POST без PK и null-полей (иначе PostgREST даёт 409 на duplicate key). */
+    @SneakyThrows
+    private String jsonForWrite(Object body, String pkColumn) {
+        Map<String, Object> map = toMap(body);
+        if (pkColumn != null) {
+            map.remove(pkColumn);
+        }
+        map.entrySet().removeIf(e -> e.getValue() == null);
+        return objectMapper.writeValueAsString(map);
+    }
+
+    @SneakyThrows
     public <T> T post(String table, Object body, Class<T> type) {
-        String json = objectMapper.writeValueAsString(body);
+        return post(table, null, body, type);
+    }
+
+    @SneakyThrows
+    public <T> T post(String table, String pkColumn, Object body, Class<T> type) {
+        String json = jsonForWrite(body, pkColumn);
         String url = baseUrl() + "/" + table;
         String response = restTemplate.exchange(url, HttpMethod.POST,
                 new HttpEntity<>(json, headers()), String.class).getBody();
@@ -107,22 +119,34 @@ public class SupabaseClient {
         return list.isEmpty() ? null : list.get(0);
     }
 
+    /**
+     * Java HttpURLConnection не поддерживает PATCH — PostgREST принимает POST + X-HTTP-Method-Override.
+     */
+    private void exchangePatch(String url, String json) {
+        HttpHeaders h = headers();
+        h.set("X-HTTP-Method-Override", "PATCH");
+        restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(json, h), Void.class);
+    }
+
     @SneakyThrows
     public void patch(String table, String column, Object columnValue, Object body) {
-        String json = objectMapper.writeValueAsString(body);
+        String json = jsonForWrite(body, column);
         String url = baseUrl() + "/" + table + "?" + column + "=eq." + columnValue;
-        restTemplate.exchange(url, HttpMethod.PATCH, new HttpEntity<>(json, headers()), Void.class);
+        exchangePatch(url, json);
     }
 
     @SneakyThrows
     public void patchComposite(String table, Map<String, Object> keys, Object body) {
-        String json = objectMapper.writeValueAsString(body);
+        Map<String, Object> map = toMap(body);
+        keys.keySet().forEach(map::remove);
+        map.entrySet().removeIf(e -> e.getValue() == null);
+        String json = objectMapper.writeValueAsString(map);
         String query = keys.entrySet().stream()
                 .map(e -> e.getKey() + "=eq." + e.getValue())
                 .reduce((a, b) -> a + "&" + b)
                 .orElse("");
         String url = baseUrl() + "/" + table + "?" + query;
-        restTemplate.exchange(url, HttpMethod.PATCH, new HttpEntity<>(json, headers()), Void.class);
+        exchangePatch(url, json);
     }
 
     public void delete(String table, String column, Object value) {
