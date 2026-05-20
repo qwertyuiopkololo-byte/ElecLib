@@ -1,35 +1,35 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<!-- actions: none | read-fav | shelf -->
-<div th:fragment="card(b, user, actions, shelf)" class="book-card">
-    <a th:href="@{/books/{id}(id=${b.bookId})}" class="book-cover-link" th:attr="aria-label=${'Книга: ' + b.title}">
-        <img th:if="${b.coverUrl != null && !#strings.isEmpty(b.coverUrl)}"
+<!-- actions: none | read-fav | read-fav-add | shelf -->
+<div th:fragment="card (book, user, actions, shelf)" class="book-card">
+    <a th:href="@{/books/{id}(id=${book.bookId})}" class="book-cover-link" th:aria-label="|Книга: ${book.title}|">
+        <img th:if="${book.coverUrl != null && !#strings.isEmpty(book.coverUrl)}"
              class="book-cover-img"
-             th:src="${b.coverUrl}"
-             th:alt="${'Обложка: ' + b.title}"
+             th:src="${book.coverUrl}"
+             th:alt="|Обложка: ${book.title}|"
              loading="lazy"/>
-        <div th:if="${b.coverUrl == null || #strings.isEmpty(b.coverUrl)}"
+        <div th:if="${book.coverUrl == null || #strings.isEmpty(book.coverUrl)}"
              class="book-cover-placeholder"
              aria-hidden="true">
             <span class="book-cover-letter"
-                  th:text="${b.title != null && !#strings.isEmpty(b.title) ? #strings.substring(b.title, 0, 1) : '?'}">А</span>
+                  th:text="${book.title != null && !#strings.isEmpty(book.title) ? #strings.substring(book.title, 0, 1) : '?'}">А</span>
         </div>
     </a>
     <div class="book-card-body">
-        <h3><a th:href="@{/books/{id}(id=${b.bookId})}" th:text="${b.title}">Title</a></h3>
+        <h3><a th:href="@{/books/{id}(id=${book.bookId})}" th:text="${book.title}">Title</a></h3>
         <div class="meta">
-            <span th:text="${b.authorName}">Author</span> · <span th:text="${b.genreName}">Genre</span>
+            <span th:text="${book.authorName}">Author</span> · <span th:text="${book.genreName}">Genre</span>
         </div>
-        <div class="rating" th:if="${b.reviewCount > 0}">
-            ★ <span th:text="${#numbers.formatDecimal(b.averageRating, 1, 1)}">0</span>
-            (<span th:text="${b.reviewCount}">0</span>)
+        <div class="rating" th:if="${book.reviewCount > 0}">
+            ★ <span th:text="${#numbers.formatDecimal(book.averageRating, 1, 1)}">0</span>
+            (<span th:text="${book.reviewCount}">0</span>)
         </div>
-        <p class="desc" th:if="${b.description}" th:text="${#strings.abbreviate(b.description, 100)}">...</p>
-        <p th:if="${b.subscriptionRequired && user != null}"><small>Нужна подписка</small></p>
+        <p class="desc" th:if="${book.description}" th:text="${#strings.abbreviate(book.description, 100)}">...</p>
+        <p th:if="${book.subscriptionRequired && user != null}"><small>Нужна подписка</small></p>
         <div th:if="${actions == 'read-fav'}" class="card-actions">
-            <a th:href="@{/books/{id}/read(id=${b.bookId})}" class="btn" th:if="${!b.subscriptionRequired}">Читать</a>
-            <form th:action="@{/books/{id}/favorite(id=${b.bookId})}" method="post" style="display:inline;">
+            <a th:href="@{/books/{id}/read(id=${book.bookId})}" class="btn" th:if="${!book.subscriptionRequired}">Читать</a>
+            <form th:action="@{/books/{id}/favorite(id=${book.bookId})}" method="post" style="display:inline;">
                 <input type="hidden" name="add" value="0"/>
                 <input type="hidden" name="returnTo" value="favorites"/>
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
@@ -37,8 +37,8 @@
             </form>
         </div>
         <div th:if="${actions == 'read-fav-add'}" class="card-actions">
-            <a th:href="@{/books/{id}/read(id=${b.bookId})}" class="btn" th:if="${!b.subscriptionRequired}">Читать</a>
-            <form th:action="@{/books/{id}/favorite(id=${b.bookId})}" method="post" style="display:inline;">
+            <a th:href="@{/books/{id}/read(id=${book.bookId})}" class="btn" th:if="${!book.subscriptionRequired}">Читать</a>
+            <form th:action="@{/books/{id}/favorite(id=${book.bookId})}" method="post" style="display:inline;">
                 <input type="hidden" name="add" value="1"/>
                 <input type="hidden" name="returnTo" value="favorites"/>
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
@@ -46,8 +46,8 @@
             </form>
         </div>
         <div th:if="${actions == 'shelf' && shelf != null}" class="card-actions">
-            <a th:href="@{/books/{id}/read(id=${b.bookId})}" class="btn" th:if="${!b.subscriptionRequired}">Читать</a>
-            <form th:action="@{/shelves/{sid}/books/{bid}/remove(sid=${shelf.shelfId},bid=${b.bookId})}" method="post" style="display:inline;">
+            <a th:href="@{/books/{id}/read(id=${book.bookId})}" class="btn" th:if="${!book.subscriptionRequired}">Читать</a>
+            <form th:action="@{/shelves/{sid}/books/{bid}/remove(sid=${shelf.shelfId},bid=${book.bookId})}" method="post" style="display:inline;">
                 <input type="hidden" name="from" value="shelf"/>
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <button type="submit" class="btn secondary small">Убрать с полки</button>
