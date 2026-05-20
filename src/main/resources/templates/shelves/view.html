@@ -15,8 +15,9 @@
 
     <div th:if="${#lists.isEmpty(books)}" class="alert">На этой полке пока нет книг.</div>
     <div class="book-grid book-grid-covers" th:if="${!#lists.isEmpty(books)}">
-        <div th:each="b : ${books}"
-             th:replace="~{fragments/book-card :: card(b=${b}, user=${user}, actions='shelf', shelf=${shelf})}"></div>
+        <th:block th:each="bookCard : ${books}">
+            <div th:replace="~{fragments/book-card :: card(book=${bookCard}, user=${user}, actions='shelf', shelf=${shelf})}"></div>
+        </th:block>
     </div>
 </main>
 <div th:replace="~{fragments/footer}"></div>

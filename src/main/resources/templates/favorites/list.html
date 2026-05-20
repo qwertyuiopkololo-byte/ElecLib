@@ -11,14 +11,16 @@
     <h1>Избранное</h1>
     <div th:if="${#lists.isEmpty(books)}" class="alert">В избранном пока ничего нет.</div>
     <div class="book-grid book-grid-covers" th:if="${!#lists.isEmpty(books)}">
-        <div th:each="b : ${books}"
-             th:replace="~{fragments/book-card :: card(b=${b}, user=${user}, actions='read-fav', shelf=null)}"></div>
+        <th:block th:each="bookCard : ${books}">
+            <div th:replace="~{fragments/book-card :: card(book=${bookCard}, user=${user}, actions='read-fav', shelf=null)}"></div>
+        </th:block>
     </div>
     <section th:if="${recommendedBooks != null && !#lists.isEmpty(recommendedBooks)}" class="recommended-section">
         <h2>Рекомендуем</h2>
         <div class="book-grid book-grid-covers">
-            <div th:each="b : ${recommendedBooks}"
-                 th:replace="~{fragments/book-card :: card(b=${b}, user=${user}, actions='read-fav-add', shelf=null)}"></div>
+            <th:block th:each="bookCard : ${recommendedBooks}">
+                <div th:replace="~{fragments/book-card :: card(book=${bookCard}, user=${user}, actions='read-fav-add', shelf=null)}"></div>
+            </th:block>
         </div>
     </section>
 </main>
