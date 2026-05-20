@@ -44,11 +44,13 @@ public class BookRepository {
     }
 
     public Book save(Book book) {
-        if (book.getBookId() == null) {
-            Book created = supabase.post(TABLE, book, Book.class);
+        Long id = book.getBookId();
+        if (id == null || id <= 0) {
+            book.setBookId(null);
+            Book created = supabase.post(TABLE, PK, book, Book.class);
             return created != null ? created : book;
         }
-        supabase.patch(TABLE, PK, book.getBookId(), book);
+        supabase.patch(TABLE, PK, id, book);
         return book;
     }
 

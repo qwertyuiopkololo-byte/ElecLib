@@ -26,8 +26,9 @@ public class AuthorRepository {
     }
 
     public Author save(Author author) {
-        if (author.getAuthorId() == null) {
-            Author created = supabase.post(TABLE, author, Author.class);
+        if (author.getAuthorId() == null || author.getAuthorId() <= 0) {
+            author.setAuthorId(null);
+            Author created = supabase.post(TABLE, PK, author, Author.class);
             return created != null ? created : author;
         }
         supabase.patch(TABLE, PK, author.getAuthorId(), author);

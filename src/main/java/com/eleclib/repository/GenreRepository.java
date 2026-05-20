@@ -26,8 +26,9 @@ public class GenreRepository {
     }
 
     public Genre save(Genre genre) {
-        if (genre.getGenreId() == null) {
-            Genre created = supabase.post(TABLE, genre, Genre.class);
+        if (genre.getGenreId() == null || genre.getGenreId() <= 0) {
+            genre.setGenreId(null);
+            Genre created = supabase.post(TABLE, PK, genre, Genre.class);
             return created != null ? created : genre;
         }
         supabase.patch(TABLE, PK, genre.getGenreId(), genre);
