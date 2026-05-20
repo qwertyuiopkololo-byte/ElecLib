@@ -4,6 +4,8 @@
         <a th:href="@{/books}">Книги</a>
         <a th:href="@{/genres}">Жанры</a>
         <a th:href="@{/favorites}">Избранное</a>
+        <a th:href="@{/shelves}">Полки</a>
+        <a th:href="@{/reading/stats}">Статистика</a>
         <a th:href="@{/subscription}">Подписка</a>
         <th:block th:if="${user != null and user.admin}">
             <a th:href="@{/admin}">Админ</a>

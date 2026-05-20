@@ -8,9 +8,11 @@ import com.eleclib.model.ReadingNote;
 import com.eleclib.service.BookMarkService;
 import com.eleclib.service.BookRatingService;
 import com.eleclib.service.BookService;
+import com.eleclib.service.ContinueReadingService;
 import com.eleclib.service.FavoriteService;
 import com.eleclib.service.ReadingNoteService;
 import com.eleclib.service.ReadingPositionService;
+import com.eleclib.service.ReadingShelfService;
 import com.eleclib.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -33,6 +35,8 @@ public class BookController {
     private final ReadingPositionService readingPositionService;
     private final BookMarkService bookMarkService;
     private final ReadingNoteService readingNoteService;
+    private final ContinueReadingService continueReadingService;
+    private final ReadingShelfService readingShelfService;
 
     @GetMapping
     public String list(@RequestParam(required = false) String q,
@@ -50,15 +54,15 @@ public class BookController {
         model.addAttribute("books", books);
         model.addAttribute("searchQuery", q != null ? q : "");
         List<BookCardDto> recommended = user != null ? bookService.getRecommendedBooks(user, 12) : List.of();
-        // Важно: на главной странице /books без фильтров список books = все книги,
-        // поэтому фильтрация "убрать дубликаты" делала рекомендации пустыми.
-        // Убираем дубликаты только при поиске/фильтре жанра.
         if ((q != null && !q.isBlank()) || genreId != null) {
             List<Long> bookIdsInList = books.stream().map(BookCardDto::getBookId).toList();
             recommended = recommended.stream().filter(r -> !bookIdsInList.contains(r.getBookId())).collect(Collectors.toList());
         }
         recommended = recommended.stream().limit(8).collect(Collectors.toList());
         model.addAttribute("recommendedBooks", recommended);
+        if (user != null) {
+            continueReadingService.getBanner(user).ifPresent(dto -> model.addAttribute("continueReading", dto));
+        }
         return "books/list";
     }
 
@@ -76,6 +80,11 @@ public class BookController {
         model.addAttribute("hasAccess", user != null && bookService.hasSubscriptionAccess(user));
         if (user != null) {
             model.addAttribute("myRating", bookRatingService.getRating(user.getUserId(), id));
+            model.addAttribute("shelfSummaries", readingShelfService.listSummaries(user.getUserId()));
+            model.addAttribute("shelfIdsForBook", readingShelfService.shelfIdsContainingBook(user.getUserId(), id));
+        } else {
+            model.addAttribute("shelfSummaries", List.of());
+            model.addAttribute("shelfIdsForBook", java.util.Set.of());
         }
         return "books/detail";
     }

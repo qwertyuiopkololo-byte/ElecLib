@@ -33,7 +33,6 @@ public class BookMarkService {
     public BookMark renameBookmark(Long userId, Long bookId, Long bookmarkId, String title) {
         BookMark bm = repository.findById(bookmarkId);
         if (bm == null || !userId.equals(bm.getUserId())) return null;
-        // Надёжно: delete + insert
         repository.deleteById(bookmarkId);
         String t = title != null ? title.trim() : "";
         return repository.save(BookMark.builder()

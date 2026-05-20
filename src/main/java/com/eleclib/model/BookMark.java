@@ -1,5 +1,6 @@
 package com.eleclib.model;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.*;
 
 import java.time.Instant;
@@ -10,6 +11,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @Builder
 public class BookMark {
+    @JsonAlias({"bookmark_id"})
     private Long id;
     private Long userId;
     private Long bookId;

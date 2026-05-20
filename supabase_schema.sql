@@ -130,3 +130,41 @@ CREATE POLICY "Allow all for service role" ON reading_notes FOR ALL
 USING (true)
 WITH CHECK (true);
 
+-- =========================================================
+-- Reading shelves (lists): system + custom
+-- =========================================================
+
+CREATE TABLE IF NOT EXISTS reading_shelf (
+  shelf_id bigserial PRIMARY KEY,
+  user_id bigint NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+  name text NOT NULL,
+  system_key text NULL CHECK (system_key IS NULL OR system_key IN ('want', 'reading', 'done'))
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_reading_shelf_user_system
+  ON reading_shelf (user_id, system_key)
+  WHERE system_key IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_reading_shelf_user ON reading_shelf (user_id);
+
+ALTER TABLE reading_shelf ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all for service role" ON reading_shelf;
+CREATE POLICY "Allow all for service role" ON reading_shelf FOR ALL
+USING (true)
+WITH CHECK (true);
+
+CREATE TABLE IF NOT EXISTS reading_shelf_book (
+  shelf_id bigint NOT NULL REFERENCES reading_shelf(shelf_id) ON DELETE CASCADE,
+  book_id bigint NOT NULL REFERENCES books(book_id) ON DELETE CASCADE,
+  added_at timestamptz DEFAULT now(),
+  PRIMARY KEY (shelf_id, book_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_reading_shelf_book_book ON reading_shelf_book (book_id);
+
+ALTER TABLE reading_shelf_book ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all for service role" ON reading_shelf_book;
+CREATE POLICY "Allow all for service role" ON reading_shelf_book FOR ALL
+USING (true)
+WITH CHECK (true);
+

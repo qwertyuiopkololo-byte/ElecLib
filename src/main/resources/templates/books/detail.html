@@ -8,6 +8,7 @@
 <body>
 <div th:replace="~{fragments/header}"></div>
 <main class="main">
+    <div th:if="${message}" class="alert success" th:text="${message}"></div>
     <div th:if="${error}" class="alert error" th:text="${error}"></div>
     <div class="book-detail">
         <h1 class="title" th:text="${book.title}">Title</h1>
@@ -24,12 +25,35 @@
             </th:block>
             <form th:if="${card.inFavorites}" th:action="@{/books/{id}/favorite(id=${book.bookId})}" method="post" style="display:inline;">
                 <input type="hidden" name="add" value="0"/>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <button type="submit" class="btn secondary">Убрать из избранного</button>
             </form>
             <form th:if="${!card.inFavorites}" th:action="@{/books/{id}/favorite(id=${book.bookId})}" method="post" style="display:inline;">
                 <input type="hidden" name="add" value="1"/>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <button type="submit" class="btn">В избранное</button>
             </form>
+        </div>
+        <div th:if="${user != null}" class="shelf-panel">
+            <h3>Полки</h3>
+            <p class="shelf-hint">«Хочу прочитать», «Читаю» и «Прочитано» — одна книга только на одной из этих полок. Свои полки можно комбинировать.</p>
+            <ul class="shelf-actions-list">
+                <li th:each="sum : ${shelfSummaries}">
+                    <span class="shelf-name" th:text="${sum.shelf.name}">Полка</span>
+                    <form th:if="${shelfIdsForBook.contains(sum.shelf.shelfId)}"
+                          th:action="@{/shelves/{sid}/books/{bid}/remove(sid=${sum.shelf.shelfId},bid=${book.bookId})}"
+                          method="post" class="shelf-action-form">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="btn small secondary">Убрать</button>
+                    </form>
+                    <form th:if="${!shelfIdsForBook.contains(sum.shelf.shelfId)}"
+                          th:action="@{/shelves/{sid}/books/{bid}(sid=${sum.shelf.shelfId},bid=${book.bookId})}"
+                          method="post" class="shelf-action-form">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="btn small">На полку</button>
+                    </form>
+                </li>
+            </ul>
         </div>
         <div th:if="${user == null}">
             <a th:href="@{/login}" class="btn">Войти для чтения и отзывов</a>

@@ -36,5 +36,9 @@ public class ReadingPositionRepository {
     public void deleteByUserIdAndBookId(Long userId, Long bookId) {
         supabase.deleteComposite(TABLE, Map.of("user_id", userId, "book_id", bookId));
     }
+
+    public List<ReadingPosition> findByUserId(Long userId) {
+        return supabase.get(TABLE, Map.of("user_id", "eq." + userId), ReadingPosition.class);
+    }
 }
 

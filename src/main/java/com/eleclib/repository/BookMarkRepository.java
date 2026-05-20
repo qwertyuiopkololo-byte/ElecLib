@@ -20,6 +20,10 @@ public class BookMarkRepository {
         return supabase.get(TABLE, Map.of("user_id", "eq." + userId, "book_id", "eq." + bookId), BookMark.class);
     }
 
+    public List<BookMark> findByUserId(Long userId) {
+        return supabase.get(TABLE, Map.of("user_id", "eq." + userId), BookMark.class);
+    }
+
     public BookMark findById(Long id) {
         List<BookMark> list = supabase.get(TABLE, Map.of("id", "eq." + id), BookMark.class);
         return list.isEmpty() ? null : list.get(0);

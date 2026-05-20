@@ -20,6 +20,10 @@ public class ReadingNoteRepository {
         return supabase.get(TABLE, Map.of("user_id", "eq." + userId, "book_id", "eq." + bookId), ReadingNote.class);
     }
 
+    public List<ReadingNote> findByUserId(Long userId) {
+        return supabase.get(TABLE, Map.of("user_id", "eq." + userId), ReadingNote.class);
+    }
+
     public ReadingNote findById(Long id) {
         List<ReadingNote> list = supabase.get(TABLE, Map.of("id", "eq." + id), ReadingNote.class);
         return list.isEmpty() ? null : list.get(0);

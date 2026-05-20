@@ -328,6 +328,15 @@
             .then(function() { if (liEl && liEl.parentNode) liEl.parentNode.removeChild(liEl); });
     }
 
+    function extractEntityId(obj, candidates) {
+        if (!obj) return null;
+        for (var i = 0; i < candidates.length; i++) {
+            var v = obj[candidates[i]];
+            if (v !== undefined && v !== null && String(v).trim() !== '') return v;
+        }
+        return null;
+    }
+
     function addBookmarkNode(id, pageNum, title) {
         var ul = document.getElementById('bookmarksList');
         var li = document.createElement('li');
@@ -475,7 +484,8 @@
                 .then(function(t) {
                     if (!t) return;
                     var bm = JSON.parse(t);
-                    if (bm && bm.id && bm.pageNumber) addBookmarkNode(bm.id, bm.pageNumber, bm.title);
+                    var bookmarkId = extractEntityId(bm, ['id', 'bookmarkId', 'bookmark_id']);
+                    if (bm && bm.pageNumber) addBookmarkNode(bookmarkId || ('tmp-bm-' + Date.now()), bm.pageNumber, bm.title);
                 });
         };
 
@@ -494,8 +504,9 @@
                 .then(function(t) {
                     if (!t) return;
                     var n = JSON.parse(t);
-                    if (n && n.id && n.pageNumber) {
-                        addNoteNode(n.id, n.pageNumber, n.quoteText, n.title);
+                    var noteId = extractEntityId(n, ['id', 'noteId', 'note_id', 'readingNoteId', 'reading_note_id']);
+                    if (n && n.pageNumber) {
+                        addNoteNode(noteId || ('tmp-note-' + Date.now()), n.pageNumber, n.quoteText, n.title);
                         renderReaderPage();
                     }
                 });
