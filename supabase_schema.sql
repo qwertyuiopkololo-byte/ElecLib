@@ -33,9 +33,12 @@ CREATE TABLE IF NOT EXISTS books (
   title text NOT NULL,
   description text,
   text text NOT NULL,
+  cover_url text,
   author_id bigint NOT NULL REFERENCES authors(author_id) ON DELETE RESTRICT,
   genre_id bigint NOT NULL REFERENCES genres(genre_id) ON DELETE RESTRICT
 );
+
+ALTER TABLE books ADD COLUMN IF NOT EXISTS cover_url text;
 
 CREATE TABLE IF NOT EXISTS subscriptions (
   subscription_id bigserial PRIMARY KEY,

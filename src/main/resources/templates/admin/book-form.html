@@ -16,6 +16,9 @@
         <input type="text" th:field="*{title}" required/>
         <label>Описание</label>
         <textarea th:field="*{description}"></textarea>
+        <label>URL обложки</label>
+        <input type="url" th:field="*{coverUrl}" placeholder="https://example.com/cover.jpg"/>
+        <p class="form-hint">Ссылка на изображение (JPG, PNG, WebP). Оставьте пустым — будет показана заглушка с буквой.</p>
         <label>Текст книги</label>
         <textarea th:field="*{text}" style="min-height:200px" required></textarea>
         <label>Автор</label>

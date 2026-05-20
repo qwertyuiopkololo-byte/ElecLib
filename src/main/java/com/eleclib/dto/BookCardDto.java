@@ -13,6 +13,7 @@ public class BookCardDto {
     private String genreName;
     private Long genreId;
     private String description;
+    private String coverUrl;
     private double averageRating;
     private int reviewCount;
     private boolean inFavorites;

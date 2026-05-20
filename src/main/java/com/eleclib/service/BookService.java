@@ -308,6 +308,7 @@ public class BookService {
                     .genreName(genreName != null ? genreName : "")
                     .genreId(b.getGenreId())
                     .description(b.getDescription())
+                    .coverUrl(b.getCoverUrl())
                     .averageRating(avg)
                     .reviewCount(count)
                     .inFavorites(inFav)
