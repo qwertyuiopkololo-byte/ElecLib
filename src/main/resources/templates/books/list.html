@@ -27,7 +27,7 @@
     </div>
     <section th:if="${recommendedBooks != null && !#lists.isEmpty(recommendedBooks)}" class="recommended-section">
         <h2>Рекомендуем</h2>
-        <p class="recommended-note">Подобрано по вашим избранным книгам</p>
+        <p class="recommended-note">Подобрано по избранному, прочитанным и книгам, которые вы читаете сейчас (приоритет — недавно начатым)</p>
         <div class="book-grid">
             <div class="book-card" th:each="b : ${recommendedBooks}">
                 <h3><a th:href="@{/books/{id}(id=${b.bookId})}" th:text="${b.title}">Title</a></h3>
