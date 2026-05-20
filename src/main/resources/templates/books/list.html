@@ -7,6 +7,17 @@
 <body>
 <div th:replace="~{fragments/header}"></div>
 <main class="main">
+    <div th:if="${message}" class="alert success" th:text="${message}"></div>
+    <div th:if="${error}" class="alert error" th:text="${error}"></div>
+    <div th:if="${user != null and continueReading != null}" class="continue-reading">
+        <div class="continue-reading-inner">
+            <p><strong>Продолжить чтение:</strong>
+                <span th:text="${continueReading.title}">Книга</span>
+                — стр. <span th:text="${continueReading.lastPage}">1</span>
+                из <span th:text="${continueReading.totalPages}">10</span></p>
+            <a th:href="@{/books/{id}/read(id=${continueReading.bookId})}" class="btn">Открыть</a>
+        </div>
+    </div>
     <h1>Книги</h1>
     <div class="search-bar">
         <form th:action="@{/books}" method="get">

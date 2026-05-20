@@ -62,6 +62,20 @@ public class BookService {
         return one.isEmpty() ? null : one.get(0);
     }
 
+    /**
+     * Карточки в порядке {@code bookIds} (для полок).
+     */
+    public List<BookCardDto> findCardsByBookIdsInOrder(List<Long> bookIds, User currentUser) {
+        if (bookIds == null || bookIds.isEmpty()) {
+            return List.of();
+        }
+        List<Book> ordered = new ArrayList<>();
+        for (Long id : bookIds) {
+            bookRepository.findById(id).ifPresent(ordered::add);
+        }
+        return toCardDtos(ordered, currentUser);
+    }
+
     public double getAverageRating(Long bookId) {
         Double avg = bookRatingRepository.getAverageRatingByBookId(bookId);
         return avg == null ? 0 : avg;

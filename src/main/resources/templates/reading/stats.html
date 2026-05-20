@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Статистика чтения — ElecLib</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+<main class="main">
+    <h1>Статистика чтения</h1>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value" th:text="${stats.booksStarted}">0</div>
+            <div class="stat-label">Книг с прогрессом</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" th:text="${stats.booksInProgress}">0</div>
+            <div class="stat-label">Читаю сейчас</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" th:text="${stats.booksFinished}">0</div>
+            <div class="stat-label">Дочитано</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" th:text="${stats.progressPageSum}">0</div>
+            <div class="stat-label">Страниц по прогрессу (сумма)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" th:text="${stats.bookmarksTotal}">0</div>
+            <div class="stat-label">Закладок</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" th:text="${stats.notesTotal}">0</div>
+            <div class="stat-label">Заметок</div>
+        </div>
+    </div>
+
+    <section class="stats-section">
+        <h2>Обновления прогресса по неделям</h2>
+        <p class="stats-hint">Сколько раз сохранялась позиция чтения в каждой неделе (по дате обновления).</p>
+        <div class="stat-bars">
+            <div class="stat-bar-row" th:each="w : ${stats.weeklyActivity}">
+                <span class="stat-bar-label" th:text="${w.label}">01.01</span>
+                <div class="stat-bar-track">
+                    <div class="stat-bar-fill"
+                         th:style="|width: ${maxWeekly > 0 ? (100.0 * w.count / maxWeekly) : 0}%|"></div>
+                </div>
+                <span class="stat-bar-count" th:text="${w.count}">0</span>
+            </div>
+        </div>
+    </section>
+    <p><a th:href="@{/books}" class="btn secondary">← К каталогу</a></p>
+</main>
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>
