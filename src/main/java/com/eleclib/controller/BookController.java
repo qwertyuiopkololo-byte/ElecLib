@@ -146,10 +146,12 @@ public class BookController {
 
     @PostMapping("/{id}/reading-position")
     @ResponseBody
-    public void saveReadingPosition(@PathVariable Long id, @RequestParam int page) {
+    public void saveReadingPosition(@PathVariable Long id,
+                                    @RequestParam int page,
+                                    @RequestParam(required = false) Integer totalPages) {
         User user = userService.getCurrentUser();
         if (user != null && page >= 1) {
-            readingPositionService.saveLastPage(user.getUserId(), id, page);
+            readingPositionService.saveLastPage(user.getUserId(), id, page, totalPages);
         }
     }
 

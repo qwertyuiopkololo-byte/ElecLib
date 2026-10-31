@@ -151,6 +151,37 @@ public class ReadingShelfService {
         }
     }
 
+    /** Keep system shelves in sync with the current reading position. */
+    public void updateReadingSystemShelf(Long userId, Long bookId, boolean completed) {
+        if (userId == null || bookId == null) return;
+        ensureDefaultShelves(userId);
+        List<ReadingShelf> userShelves = shelfRepository.findByUserId(userId);
+        String targetKey = completed ? SK_DONE : SK_READING;
+        ReadingShelf targetShelf = userShelves.stream()
+                .filter(shelf -> targetKey.equals(shelf.getSystemKey()))
+                .findFirst()
+                .orElse(null);
+        if (targetShelf == null || targetShelf.getShelfId() == null) return;
+
+        Map<Long, ReadingShelf> systemShelvesById = userShelves.stream()
+                .filter(shelf -> shelf.getSystemKey() != null && !shelf.getSystemKey().isBlank())
+                .filter(shelf -> shelf.getShelfId() != null)
+                .collect(Collectors.toMap(ReadingShelf::getShelfId, shelf -> shelf, (a, b) -> a));
+        boolean alreadyOnTarget = false;
+        for (ReadingShelfBook relation : shelfBookRepository.findByBookId(bookId)) {
+            ReadingShelf associatedShelf = systemShelvesById.get(relation.getShelfId());
+            if (associatedShelf == null) continue;
+            if (targetShelf.getShelfId().equals(associatedShelf.getShelfId())) {
+                alreadyOnTarget = true;
+            } else {
+                shelfBookRepository.delete(associatedShelf.getShelfId(), bookId);
+            }
+        }
+        if (!alreadyOnTarget) {
+            shelfBookRepository.save(targetShelf.getShelfId(), bookId);
+        }
+    }
+
     public void removeBookFromShelf(Long userId, Long shelfId, Long bookId) {
         ReadingShelf shelf = shelfRepository.findById(shelfId);
         if (shelf == null || !userId.equals(shelf.getUserId())) {

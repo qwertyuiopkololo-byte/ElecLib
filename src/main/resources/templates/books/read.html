@@ -362,7 +362,7 @@
 
     function savePosition() {
         if (!saveUrl || currentPage < 1) return;
-        var url = saveUrl + '?page=' + currentPage + '&' + csrfParam + '=' + encodeURIComponent(csrfToken);
+        var url = saveUrl + '?page=' + currentPage + '&totalPages=' + pages.length + '&' + csrfParam + '=' + encodeURIComponent(csrfToken);
         navigator.sendBeacon ? navigator.sendBeacon(url) : (function() {
             var xhr = new XMLHttpRequest();
             xhr.open('POST', url, false);
@@ -507,6 +507,7 @@
             currentPage = initialPage;
         }
         updateUI();
+        savePosition();
         window.addEventListener('beforeunload', savePosition);
 
         var readerSettings = getReaderSettings();

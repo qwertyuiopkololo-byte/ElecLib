@@ -103,7 +103,7 @@
 
     function savePosition() {
         if (!saveUrl || currentPage < 1) return;
-        var url = saveUrl + '?page=' + currentPage + '&' + csrfParam + '=' + encodeURIComponent(csrfToken);
+        var url = saveUrl + '?page=' + currentPage + '&totalPages=' + totalPages + '&' + csrfParam + '=' + encodeURIComponent(csrfToken);
         fetch(url, { method: 'POST' });
     }
 
@@ -195,9 +195,13 @@
         currentPage = Math.min(Math.max(1, initialPage), totalPages);
         updateNav();
         return renderPage(currentPage);
+    }).then(function() {
+        savePosition();
     }).catch(function() {
         document.getElementById('comicLoadError').style.display = 'block';
     });
+
+    window.addEventListener('beforeunload', savePosition);
 
     window.addEventListener('resize', function() {
         if (pdfDoc) renderPage(currentPage);
