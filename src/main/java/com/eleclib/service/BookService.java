@@ -138,6 +138,41 @@ public class BookService {
         return toCardDtos(ordered, currentUser);
     }
 
+    public List<BookCardDto> getSimilarBooks(Book currentBook, User currentUser, int limit) {
+        if (currentBook == null || limit <= 0
+                || (currentBook.getAuthorId() == null && currentBook.getGenreId() == null)) {
+            return List.of();
+        }
+        List<Book> candidates = bookRepository.findSimilarBooks(currentBook.getAuthorId(),
+                currentBook.getGenreId(), currentBook.getBookId(), Math.max(limit * 8, 64));
+        Set<Long> excludedIds = new HashSet<>();
+        excludedIds.add(currentBook.getBookId());
+        if (currentUser != null) {
+            Long userId = currentUser.getUserId();
+            favoriteRepository.findByUser_UserId(userId).stream()
+                    .map(com.eleclib.model.Favorite::getBookId)
+                    .filter(Objects::nonNull)
+                    .forEach(excludedIds::add);
+            for (ReadingShelf shelf : readingShelfRepository.findByUserId(userId)) {
+                if (ReadingShelfService.SK_DONE.equals(shelf.getSystemKey()) && shelf.getShelfId() != null) {
+                    readingShelfBookRepository.findByShelfId(shelf.getShelfId()).stream()
+                            .map(ReadingShelfBook::getBookId)
+                            .filter(Objects::nonNull)
+                            .forEach(excludedIds::add);
+                }
+            }
+        }
+        List<Book> similar = candidates.stream()
+                .filter(candidate -> !excludedIds.contains(candidate.getBookId()))
+                .sorted(Comparator
+                        .comparingInt((Book candidate) -> Objects.equals(candidate.getAuthorId(), currentBook.getAuthorId()) ? 1 : 0)
+                        .reversed()
+                        .thenComparing(Book::getBookId, Comparator.nullsLast(Long::compareTo)))
+                .limit(limit)
+                .toList();
+        return toCardDtos(similar, currentUser);
+    }
+
     public double getAverageRating(Long bookId) {
         Double avg = bookRatingRepository.getAverageRatingByBookId(bookId);
         return avg == null ? 0 : avg;

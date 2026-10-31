@@ -81,6 +81,7 @@ public class BookController {
         BookCardDto card = bookService.findBookCardById(id, user);
         model.addAttribute("book", book);
         model.addAttribute("card", card);
+        model.addAttribute("similarBooks", bookService.getSimilarBooks(book, user, 8));
         model.addAttribute("reviews", bookService.getReviews(id, user != null ? user.getUserId() : null));
         model.addAttribute("hasAccess", user != null && bookService.hasSubscriptionAccess(user));
         model.addAttribute("comicReady", !book.isComic() || comicPdfStorageService.hasPdf(id));

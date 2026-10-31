@@ -104,6 +104,14 @@
             </form>
         </div>
     </section>
+    <section th:if="${similarBooks != null && !#lists.isEmpty(similarBooks)}" class="recommended-section similar-books-section">
+        <h2>Похожие книги</h2>
+        <div class="book-grid book-grid-covers">
+            <th:block th:each="bookCard : ${similarBooks}">
+                <div th:replace="~{fragments/book-card :: card(book=${bookCard}, user=${user}, actions='none', shelf=null)}"></div>
+            </th:block>
+        </div>
+    </section>
 </main>
 <script>
 (function() {

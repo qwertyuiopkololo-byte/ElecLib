@@ -66,6 +66,23 @@ public class BookRepository {
                 "book_id", "in.(" + ids + ")"), Book.class);
     }
 
+    public List<Book> findSimilarBooks(Long authorId, Long genreId, Long excludeBookId, int limit) {
+        if (limit <= 0 || (authorId == null && genreId == null)) return List.of();
+        Map<String, String> filters = new LinkedHashMap<>();
+        filters.put("select", "book_id,title,description,author_id,genre_id,cover_url,content_type");
+        filters.put("order", "book_id.asc");
+        filters.put("limit", String.valueOf(limit));
+        if (excludeBookId != null) filters.put("book_id", "neq." + excludeBookId);
+        if (authorId != null && genreId != null) {
+            filters.put("or", "(author_id.eq." + authorId + ",genre_id.eq." + genreId + ")");
+        } else if (authorId != null) {
+            filters.put("author_id", "eq." + authorId);
+        } else {
+            filters.put("genre_id", "eq." + genreId);
+        }
+        return supabase.get(TABLE, filters, Book.class);
+    }
+
     public List<Book> searchByTitleOrAuthor(String query, java.util.Map<Long, String> authorFullNames) {
         String q = query == null ? "" : query.trim().toLowerCase();
         if (q.isEmpty()) return findAll();
