@@ -341,12 +341,29 @@ public class BookService {
                 .collect(Collectors.groupingBy(BookRating::getBookId));
         Set<Long> favoriteBookIds = userId == null ? Set.of() : favoriteRepository.findByUserAndBookIds(userId, bookIds).stream()
                 .map(com.eleclib.model.Favorite::getBookId).collect(Collectors.toSet());
+        Map<Long, ReadingPosition> positionsByBook = userId == null ? Map.of()
+                : readingPositionRepository.findByUserId(userId).stream()
+                .filter(position -> bookIds.contains(position.getBookId()))
+                .collect(Collectors.toMap(ReadingPosition::getBookId, position -> position,
+                        (first, second) -> second));
+        List<Long> progressBookIds = List.copyOf(positionsByBook.keySet());
+        Map<Long, Integer> totalPagesByBook = bookRepository.findTextsByBookIds(progressBookIds).stream()
+                .filter(book -> book.getBookId() != null && book.getText() != null && !book.getText().isBlank())
+                .collect(Collectors.toMap(Book::getBookId, book -> ReaderPaging.totalPages(book.getText()),
+                        (first, second) -> first));
         return books.stream().map(b -> {
             List<BookRating> ratings = ratingsByBook.getOrDefault(b.getBookId(), List.of());
             double avg = ratings.stream().map(BookRating::getRating).filter(Objects::nonNull)
                     .mapToInt(Integer::intValue).average().orElse(0);
             int count = ratings.size();
             boolean inFav = userId != null && favoriteBookIds.contains(b.getBookId());
+            ReadingPosition position = positionsByBook.get(b.getBookId());
+            boolean hasProgress = position != null && totalPagesByBook.containsKey(b.getBookId());
+            int totalPages = hasProgress ? totalPagesByBook.get(b.getBookId()) : 0;
+            int lastPage = !hasProgress ? 0
+                    : Math.min(totalPages, Math.max(1, position.getLastPage() == null ? 1 : position.getLastPage()));
+            int progressPercent = !hasProgress || totalPages <= 0 ? 0
+                    : Math.min(100, (int) Math.round(100.0 * lastPage / totalPages));
             Author author = b.getAuthorId() != null ? authorMap.get(b.getAuthorId()) : null;
             String genreName = b.getGenreId() != null ? genreMap.get(b.getGenreId()) : null;
             return BookCardDto.builder()
@@ -361,8 +378,10 @@ public class BookService {
                     .averageRating(avg)
                     .reviewCount(count)
                     .inFavorites(inFav)
-                    .hasProgress(false)
-                    .lastPosition(0)
+                    .hasProgress(hasProgress)
+                    .lastPosition(lastPage)
+                    .totalPages(totalPages)
+                    .progressPercent(progressPercent)
                     .subscriptionRequired(!hasSubscription)
                     .comic(b.isComic())
                     .comicReady(b.isComic() && comicPdfStorageService.hasPdf(b.getBookId()))

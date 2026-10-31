@@ -58,6 +58,14 @@ public class BookRepository {
         return supabase.get(TABLE, filters, Book.class);
     }
 
+    public List<Book> findTextsByBookIds(List<Long> bookIds) {
+        if (bookIds == null || bookIds.isEmpty()) return List.of();
+        String ids = bookIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+        return supabase.get(TABLE, Map.of(
+                "select", "book_id,text",
+                "book_id", "in.(" + ids + ")"), Book.class);
+    }
+
     public List<Book> searchByTitleOrAuthor(String query, java.util.Map<Long, String> authorFullNames) {
         String q = query == null ? "" : query.trim().toLowerCase();
         if (q.isEmpty()) return findAll();

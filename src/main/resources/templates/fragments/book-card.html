@@ -30,6 +30,19 @@
             </th:block>
         </div>
         <p class="desc" th:text="${book.description != null ? #strings.abbreviate(book.description, 100) : ''}">...</p>
+        <div class="book-progress-slot">
+            <div class="book-reading-progress">
+                <div class="book-reading-progress-label">
+                    <span th:if="${book.hasProgress}" th:text="|Стр. ${book.lastPosition} из ${book.totalPages}|">Стр. 1 из 10</span>
+                    <span th:unless="${book.hasProgress}">Не начато</span>
+                    <span th:text="|${book.progressPercent != null ? book.progressPercent : 0}%|">0%</span>
+                </div>
+                <div class="book-reading-progress-track" role="progressbar" aria-label="Прогресс чтения"
+                     th:aria-valuenow="${book.progressPercent != null ? book.progressPercent : 0}" aria-valuemin="0" aria-valuemax="100">
+                    <span th:style="|width: ${book.progressPercent != null ? book.progressPercent : 0}%|"></span>
+                </div>
+            </div>
+        </div>
         <p th:if="${book.subscriptionRequired && user != null}"><small>Нужна подписка</small></p>
         <div th:if="${actions == 'read-fav'}" class="card-actions">
             <a th:href="@{/books/{id}/read(id=${book.bookId})}" class="btn" th:if="${!book.subscriptionRequired}">Читать</a>

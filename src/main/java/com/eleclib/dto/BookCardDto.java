@@ -19,6 +19,8 @@ public class BookCardDto {
     private boolean inFavorites;
     private boolean hasProgress;
     private Integer lastPosition;
+    private Integer totalPages;
+    private Integer progressPercent;
     private boolean subscriptionRequired;
     private boolean comic;
     /** PDF загружен на сервер (для комиксов) */
