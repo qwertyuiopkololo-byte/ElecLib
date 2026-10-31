@@ -21,6 +21,12 @@ public class BookRatingRepository {
         return supabase.getByFilter(TABLE, "book_id", bookId, BookRating.class);
     }
 
+    public List<BookRating> findByBookIds(List<Long> bookIds) {
+        if (bookIds == null || bookIds.isEmpty()) return List.of();
+        String ids = bookIds.stream().map(String::valueOf).collect(java.util.stream.Collectors.joining(","));
+        return supabase.get(TABLE, Map.of("book_id", "in.(" + ids + ")"), BookRating.class);
+    }
+
     public Optional<BookRating> findByUser_UserIdAndBook_BookId(Long userId, Long bookId) {
         List<BookRating> list = supabase.get(TABLE, Map.of("user_id", "eq." + userId, "book_id", "eq." + bookId), BookRating.class);
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));

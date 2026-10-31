@@ -35,6 +35,15 @@ public class FavoriteService {
                 .collect(Collectors.toList());
     }
 
+    public List<Long> getFavoriteBookIds(Long userId, int limit) {
+        if (userId == null || limit <= 0) return List.of();
+        return favoriteRepository.findByUser_UserId(userId).stream()
+                .map(Favorite::getBookId)
+                .filter(java.util.Objects::nonNull)
+                .limit(limit)
+                .toList();
+    }
+
     public boolean isFavorite(Long userId, Long bookId) {
         return userId != null && favoriteRepository.existsByUser_UserIdAndBook_BookId(userId, bookId);
     }

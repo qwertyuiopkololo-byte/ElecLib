@@ -513,10 +513,18 @@
         applyReaderSettings(readerSettings);
         updateReaderSettingsUI(readerSettings);
 
+        function toggleReaderPanel(panelId) {
+            var panel = document.getElementById(panelId);
+            if (!panel) return;
+            var shouldOpen = panel.getAttribute('aria-hidden') === 'true';
+            ['readerToc', 'readerBookmarks', 'readerNotes', 'readerSettings'].forEach(function(id) {
+                var candidate = document.getElementById(id);
+                if (candidate) candidate.setAttribute('aria-hidden', 'true');
+            });
+            panel.setAttribute('aria-hidden', shouldOpen ? 'false' : 'true');
+        }
         document.getElementById('btnToggleReaderSettings').onclick = function() {
-            var panel = document.getElementById('readerSettings');
-            var hidden = panel.getAttribute('aria-hidden') === 'true';
-            panel.setAttribute('aria-hidden', hidden ? 'false' : 'true');
+            toggleReaderPanel('readerSettings');
         };
         document.querySelectorAll('.reader-opt').forEach(function(btn) {
             btn.onclick = function() {
@@ -552,9 +560,7 @@
         document.getElementById('pageInput2').onkeydown = function(e) { if (e.key === 'Enter') { e.preventDefault(); goToPage(this.value); } };
 
         document.getElementById('btnToggleToc').onclick = function() {
-            var panel = document.getElementById('readerToc');
-            var hidden = panel.getAttribute('aria-hidden') === 'true';
-            panel.setAttribute('aria-hidden', hidden ? 'false' : 'true');
+            toggleReaderPanel('readerToc');
         };
         document.getElementById('tocList').addEventListener('click', function(e) {
             if (e.target.classList.contains('toc-go')) {
@@ -564,14 +570,10 @@
         });
 
         document.getElementById('btnToggleBookmarks').onclick = function() {
-            var panel = document.getElementById('readerBookmarks');
-            var hidden = panel.getAttribute('aria-hidden') === 'true';
-            panel.setAttribute('aria-hidden', hidden ? 'false' : 'true');
+            toggleReaderPanel('readerBookmarks');
         };
         document.getElementById('btnToggleNotes').onclick = function() {
-            var panel = document.getElementById('readerNotes');
-            var hidden = panel.getAttribute('aria-hidden') === 'true';
-            panel.setAttribute('aria-hidden', hidden ? 'false' : 'true');
+            toggleReaderPanel('readerNotes');
         };
 
         document.getElementById('btnAddBookmark').onclick = function() {

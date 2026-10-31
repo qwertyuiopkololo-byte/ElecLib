@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Comparator;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,15 @@ public class ReadingNoteService {
 
     public List<ReadingNote> getNotes(Long userId, Long bookId) {
         return repository.findByUserIdAndBookId(userId, bookId);
+    }
+
+    public List<ReadingNote> getLatestForUser(Long userId, int limit) {
+        if (userId == null || limit <= 0) return List.of();
+        return repository.findByUserId(userId).stream()
+                .sorted(Comparator.comparing(ReadingNote::getCreatedAt,
+                        Comparator.nullsLast(Comparator.reverseOrder())))
+                .limit(limit)
+                .toList();
     }
 
     public ReadingNote addNote(Long userId, Long bookId, int pageNumber, String quoteText, String title) {

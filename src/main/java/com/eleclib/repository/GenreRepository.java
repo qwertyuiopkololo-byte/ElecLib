@@ -12,13 +12,29 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class GenreRepository {
 
+    private static final long CACHE_TTL_NANOS = java.time.Duration.ofMinutes(1).toNanos();
+
     private static final String TABLE = "genres";
     private static final String PK = "genre_id";
 
     private final SupabaseClient supabase;
+    private volatile List<Genre> cachedGenres;
+    private volatile long genresCachedAt;
 
     public List<Genre> findAll() {
-        return supabase.getAll(TABLE, Genre.class);
+        List<Genre> cached = cachedGenres;
+        long now = System.nanoTime();
+        if (cached != null && now - genresCachedAt < CACHE_TTL_NANOS) return cached;
+        synchronized (this) {
+            cached = cachedGenres;
+            now = System.nanoTime();
+            if (cached == null || now - genresCachedAt >= CACHE_TTL_NANOS) {
+                cached = List.copyOf(supabase.getAll(TABLE, Genre.class));
+                cachedGenres = cached;
+                genresCachedAt = now;
+            }
+            return cached;
+        }
     }
 
     public Optional<Genre> findById(Long id) {
@@ -26,13 +42,17 @@ public class GenreRepository {
     }
 
     public Genre save(Genre genre) {
+        Genre saved;
         if (genre.getGenreId() == null || genre.getGenreId() <= 0) {
             genre.setGenreId(null);
             Genre created = supabase.post(TABLE, PK, genre, Genre.class);
-            return created != null ? created : genre;
+            saved = created != null ? created : genre;
+        } else {
+            supabase.patch(TABLE, PK, genre.getGenreId(), genre);
+            saved = genre;
         }
-        supabase.patch(TABLE, PK, genre.getGenreId(), genre);
-        return genre;
+        cachedGenres = null;
+        return saved;
     }
 
     public long count() {

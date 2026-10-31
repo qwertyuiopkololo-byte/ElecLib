@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Книги — ElecLib</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <link rel="stylesheet" th:href="@{/css/style.css(v='catalog-card-text-1')}"/>
 </head>
 <body class="catalog-page">
 <div th:replace="~{fragments/header}"></div>
@@ -29,7 +29,7 @@
         </form>
     </div>
     </div>
-    <section th:if="${recommendedBooks != null && !#lists.isEmpty(recommendedBooks)}" class="recommended-section">
+    <section th:if="${(searchQuery == null || #strings.isEmpty(searchQuery)) && genreId == null && recommendedBooks != null && !#lists.isEmpty(recommendedBooks)}" class="recommended-section">
         <h2>Рекомендуем</h2>
         <div class="book-grid book-grid-covers">
             <th:block th:each="bookCard : ${recommendedBooks}">
@@ -43,6 +43,14 @@
             <div th:replace="~{fragments/book-card :: card(book=${bookCard}, user=${user}, actions='none', shelf=null)}"></div>
         </th:block>
     </div>
+    <nav class="catalog-pagination" aria-label="Страницы каталога"
+         th:if="${currentPage > 0 || hasNextPage}">
+        <a class="btn secondary" th:if="${currentPage > 0}"
+           th:href="@{/books(page=${currentPage - 1},q=${searchQuery},genreId=${genreId})}">Назад</a>
+        <span th:text="|Страница ${currentPage + 1}|">Страница 1</span>
+        <a class="btn secondary" th:if="${hasNextPage}"
+           th:href="@{/books(page=${currentPage + 1},q=${searchQuery},genreId=${genreId})}">Далее</a>
+    </nav>
 </main>
 <div th:replace="~{fragments/footer}"></div>
 </body>

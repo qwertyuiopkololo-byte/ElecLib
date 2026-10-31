@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta charset="UTF-8"/>
+    <title>Моя библиотека — ElecLib</title>
+    <link rel="stylesheet" th:href="@{/css/style.css(v='library-actions-3')}"/>
+</head>
+<body class="my-library-page">
+<div th:replace="~{fragments/header}"></div>
+<main class="main">
+    <header class="library-heading">
+        <p class="library-kicker">Ваше пространство для чтения</p>
+        <h1>Моя библиотека</h1>
+        <p>Продолжайте читать, возвращайтесь к заметкам и собирайте книги на своих полках.</p>
+    </header>
+
+    <section class="library-section" aria-labelledby="library-reading-title">
+        <div class="library-section-heading">
+            <div>
+                <p class="library-kicker">С того места, где остановились</p>
+                <h2 id="library-reading-title">Читаю</h2>
+            </div>
+            <a th:href="@{/reading/stats}" class="library-more">Статистика чтения <span aria-hidden="true">→</span></a>
+        </div>
+        <div th:if="${#lists.isEmpty(inProgress)}" class="library-empty">
+            <p>Здесь появятся книги, чтение которых вы начали.</p>
+            <a th:href="@{/books}" class="btn secondary">Выбрать книгу</a>
+        </div>
+        <div th:if="${!#lists.isEmpty(inProgress)}" class="library-progress-grid">
+            <article class="library-progress-card" th:each="item : ${inProgress}">
+                <a class="library-progress-cover" th:href="@{/books/{id}/read(id=${item.book.bookId})}"
+                   th:aria-label="|Продолжить чтение: ${item.book.title}|">
+                    <img th:if="${item.book.coverUrl != null && !#strings.isEmpty(item.book.coverUrl)}"
+                         th:src="${item.book.coverUrl}" th:alt="|Обложка: ${item.book.title}|" loading="lazy"/>
+                    <span th:if="${item.book.coverUrl == null || #strings.isEmpty(item.book.coverUrl)}" class="library-cover-placeholder"
+                          th:text="${item.book.title != null && !#strings.isEmpty(item.book.title) ? #strings.substring(item.book.title, 0, 1) : '?'}">К</span>
+                </a>
+                <div class="library-progress-info">
+                    <h3><a th:href="@{/books/{id}(id=${item.book.bookId})}" th:text="${item.book.title}">Название книги</a></h3>
+                    <p class="library-muted" th:text="${item.book.authorName}">Автор</p>
+                    <div class="library-progress-track" role="progressbar" aria-label="Прогресс чтения"
+                         th:aria-valuenow="${item.percent}" aria-valuemin="0" aria-valuemax="100">
+                        <span th:style="|width: ${item.percent}%|"></span>
+                    </div>
+                    <p class="library-progress-label" th:text="|Страница ${item.lastPage} из ${item.totalPages} · ${item.percent}%|">Страница</p>
+                    <a th:href="@{/books/{id}/read(id=${item.book.bookId})}" class="library-continue">Продолжить чтение <span aria-hidden="true">→</span></a>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="library-section" aria-labelledby="library-favorites-title">
+        <div class="library-section-heading">
+            <div>
+                <p class="library-kicker">Отложили на потом</p>
+                <h2 id="library-favorites-title">Избранное</h2>
+            </div>
+            <a th:href="@{/favorites}" class="library-more">Все избранное <span aria-hidden="true">→</span></a>
+        </div>
+        <div th:if="${#lists.isEmpty(favorites)}" class="library-empty">
+            <p>Сохраняйте понравившиеся книги, чтобы быстро найти их здесь.</p>
+            <a th:href="@{/books}" class="btn secondary">Перейти в каталог</a>
+        </div>
+        <div class="book-grid book-grid-covers library-book-grid" th:if="${!#lists.isEmpty(favorites)}">
+            <th:block th:each="bookCard : ${favorites}">
+                <div class="library-favorite-card">
+                <div th:replace="~{fragments/book-card :: card(book=${bookCard}, user=${user}, actions='none', shelf=null)}"></div>
+                <form th:action="@{/books/{id}/favorite(id=${bookCard.bookId})}" method="post" class="library-favorite-remove">
+                    <input type="hidden" name="add" value="0"/>
+                    <input type="hidden" name="returnTo" value="my-library"/>
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn secondary small">Убрать из избранного</button>
+                </form>
+                </div>
+            </th:block>
+        </div>
+    </section>
+
+    <section class="library-section" aria-labelledby="library-shelves-title">
+        <div class="library-section-heading">
+            <div>
+                <p class="library-kicker">Собирайте по настроению</p>
+                <h2 id="library-shelves-title">Полки</h2>
+            </div>
+            <a th:href="@{/shelves}" class="library-more">Управлять полками <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="library-shelves" th:if="${!#lists.isEmpty(shelves)}">
+            <a class="library-shelf" th:each="summary : ${shelves}"
+               th:href="@{/shelves/{id}(id=${summary.shelf.shelfId})}">
+                <span class="library-shelf-icon" aria-hidden="true">▤</span>
+                <span class="library-shelf-name" th:text="${summary.shelf.name}">Название полки</span>
+                <span class="library-shelf-count" th:text="${summary.bookCount}">0</span>
+                <span class="library-shelf-arrow" aria-hidden="true">→</span>
+            </a>
+        </div>
+    </section>
+
+    <section class="library-section library-activity-section" aria-labelledby="library-activity-title">
+        <div class="library-section-heading">
+            <div>
+                <p class="library-kicker">Ваши недавние отметки</p>
+                <h2 id="library-activity-title">Закладки и заметки</h2>
+            </div>
+        </div>
+        <div th:if="${#lists.isEmpty(activities)}" class="library-empty">
+            <p>Закладки и заметки, созданные в ридере, будут собраны здесь.</p>
+        </div>
+        <ol class="library-activity-list" th:if="${!#lists.isEmpty(activities)}">
+            <li class="library-activity" th:each="activity : ${activities}">
+                <span class="library-activity-mark" th:classappend="${activity.type == 'Заметка'} ? ' note' : ''" aria-hidden="true"></span>
+                <div class="library-activity-copy">
+                    <p class="library-activity-type" th:text="${activity.type}">Закладка</p>
+                    <a class="library-activity-book" th:href="@{/books/{id}/read(id=${activity.bookId})} + |#page=${activity.pageNumber}|"
+                       th:text="${activity.bookTitle}">Книга</a>
+                    <p class="library-activity-detail" th:if="${activity.title != null && !#strings.isEmpty(activity.title)}" th:text="${activity.title}">Название</p>
+                    <blockquote th:if="${activity.excerpt != null && !#strings.isEmpty(activity.excerpt)}"
+                                th:text="${#strings.abbreviate(activity.excerpt, 150)}">Цитата</blockquote>
+                    <div class="library-activity-actions">
+                        <div class="library-activity-buttons">
+                            <button type="button" class="btn secondary library-edit-toggle"
+                                    th:attr="data-form-id=|activity-edit-${activity.activityId}|">Редактировать</button>
+                            <form th:if="${activity.type == 'Закладка'}"
+                              th:action="@{/my-library/bookmarks/{bookId}/{activityId}/delete(bookId=${activity.bookId},activityId=${activity.activityId})}"
+                              method="post" onsubmit="return confirm('Удалить закладку?');">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <button type="submit" class="btn danger">Удалить</button>
+                            </form>
+                            <form th:if="${activity.type == 'Заметка'}"
+                              th:action="@{/my-library/notes/{bookId}/{activityId}/delete(bookId=${activity.bookId},activityId=${activity.activityId})}"
+                              method="post" onsubmit="return confirm('Удалить заметку?');">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <button type="submit" class="btn danger">Удалить</button>
+                            </form>
+                        </div>
+                        <form th:if="${activity.type == 'Закладка'}"
+                              th:action="@{/my-library/bookmarks/{bookId}/{activityId}/rename(bookId=${activity.bookId},activityId=${activity.activityId})}"
+                              method="post" class="library-edit-form" th:id="|activity-edit-${activity.activityId}|" hidden>
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <label class="visually-hidden" th:for="|activity-title-${activity.activityId}|">Название закладки</label>
+                            <input type="text" name="title" maxlength="120" placeholder="Название закладки"
+                                   th:id="|activity-title-${activity.activityId}|" th:value="${activity.title}"/>
+                            <button type="submit" class="btn secondary">Сохранить</button>
+                        </form>
+                        <form th:if="${activity.type == 'Заметка'}"
+                              th:action="@{/my-library/notes/{bookId}/{activityId}/rename(bookId=${activity.bookId},activityId=${activity.activityId})}"
+                              method="post" class="library-edit-form" th:id="|activity-edit-${activity.activityId}|" hidden>
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <label class="visually-hidden" th:for="|activity-title-${activity.activityId}|">Название заметки</label>
+                            <input type="text" name="title" maxlength="120" placeholder="Название заметки"
+                                   th:id="|activity-title-${activity.activityId}|" th:value="${activity.title}"/>
+                            <button type="submit" class="btn secondary">Сохранить</button>
+                        </form>
+                    </div>
+                </div>
+                <a class="library-activity-page" th:href="@{/books/{id}/read(id=${activity.bookId})} + |#page=${activity.pageNumber}|"
+                   th:text="|Стр. ${activity.pageNumber}|">Страница</a>
+            </li>
+        </ol>
+    </section>
+</main>
+<div th:replace="~{fragments/footer}"></div>
+<script>
+    document.querySelectorAll('.library-edit-toggle').forEach(function(button) {
+        button.addEventListener('click', function() {
+            var form = document.getElementById(button.getAttribute('data-form-id'));
+            if (!form) return;
+            var show = form.hasAttribute('hidden');
+            if (show) form.removeAttribute('hidden'); else form.setAttribute('hidden', '');
+            button.textContent = show ? 'Отмена' : 'Редактировать';
+            if (show) {
+                var input = form.querySelector('input[name="title"]');
+                if (input) input.focus();
+            }
+        });
+    });
+</script>
+</body>
+</html>

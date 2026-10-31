@@ -26,6 +26,10 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -129,5 +133,25 @@ class BookServiceCardFeaturesTest {
         assertEquals(1, cards.size());
         assertEquals(2L, cards.get(0).getBookId());
         assertTrue(cards.get(0).isComic());
+    }
+
+    @Test
+    void getCatalogPageRequestsOneExtraAndLoadsRatingsInBatch() {
+        List<Book> fetched = java.util.stream.LongStream.rangeClosed(1, 25)
+                .mapToObj(id -> Book.builder().bookId(id).title("Book " + id)
+                        .authorId(10L).genreId(20L).build())
+                .toList();
+        when(bookRepository.findCatalogPage(24, 25, 20L, "Автор", List.of(10L))).thenReturn(fetched);
+
+        var page = bookService.getCatalogPage(1, "Автор", 20L, subscriber);
+
+        assertEquals(24, page.books().size());
+        assertEquals(1, page.page());
+        assertTrue(page.hasNext());
+        verify(bookRepository).findCatalogPage(24, 25, 20L, "Автор", List.of(10L));
+        verify(bookRatingRepository).findByBookIds(anyList());
+        verify(bookRatingRepository, never()).findByBook_BookId(anyLong());
+        verify(favoriteRepository).findByUserAndBookIds(eq(1L), anyList());
+        verify(favoriteRepository, never()).existsByUser_UserIdAndBook_BookId(anyLong(), anyLong());
     }
 }

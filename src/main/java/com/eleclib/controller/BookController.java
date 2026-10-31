@@ -48,18 +48,16 @@ public class BookController {
     @GetMapping
     public String list(@RequestParam(required = false) String q,
                        @RequestParam(required = false) Long genreId,
+                       @RequestParam(defaultValue = "0") int page,
                        Model model) {
         User user = userService.getCurrentUser();
-        List<BookCardDto> books;
-        if (q != null && !q.isBlank()) {
-            books = bookService.searchByTitleOrAuthor(q, user);
-        } else if (genreId != null) {
-            books = bookService.findByGenre(genreId, user);
-        } else {
-            books = bookService.findAllAsCards(user);
-        }
+        var catalogPage = bookService.getCatalogPage(page, q, genreId, user);
+        List<BookCardDto> books = catalogPage.books();
         model.addAttribute("books", books);
         model.addAttribute("searchQuery", q != null ? q : "");
+        model.addAttribute("currentPage", catalogPage.page());
+        model.addAttribute("hasNextPage", catalogPage.hasNext());
+        model.addAttribute("genreId", genreId);
         List<BookCardDto> recommended = user != null ? bookService.getRecommendedBooks(user, 12) : List.of();
         if ((q != null && !q.isBlank()) || genreId != null) {
             List<Long> bookIdsInList = books.stream().map(BookCardDto::getBookId).toList();
@@ -226,6 +224,7 @@ public class BookController {
             favoriteService.removeFavorite(user.getUserId(), id);
         }
         if ("favorites".equals(returnTo)) return "redirect:/favorites";
+        if ("my-library".equals(returnTo)) return "redirect:/my-library";
         if ("comics".equals(returnTo)) return "redirect:/comics";
         if ("read".equals(returnTo)) return "redirect:/books/" + id + "/read";
         return "redirect:/books/" + id;

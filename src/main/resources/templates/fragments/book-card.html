@@ -8,6 +8,7 @@
              class="book-cover-img"
              th:src="${book.coverUrl}"
              th:alt="|Обложка: ${book.title}|"
+             width="240" height="360"
              loading="lazy"/>
         <div th:if="${book.coverUrl == null || #strings.isEmpty(book.coverUrl)}"
              class="book-cover-placeholder"
@@ -22,11 +23,13 @@
             <span class="book-author" th:text="${book.authorName}">Author</span><span class="book-genre" th:text="${book.genreName}">Genre</span>
             <span th:if="${book.comic}" class="comic-badge comic-badge-inline">PDF</span>
         </div>
-        <div class="rating" th:if="${book.reviewCount > 0}">
-            ★ <span th:text="${#numbers.formatDecimal(book.averageRating, 1, 1)}">0</span>
-            (<span th:text="${book.reviewCount}">0</span>)
+        <div class="rating">
+            <th:block th:if="${book.reviewCount > 0}">
+                ★ <span th:text="${#numbers.formatDecimal(book.averageRating, 1, 1)}">0</span>
+                (<span th:text="${book.reviewCount}">0</span>)
+            </th:block>
         </div>
-        <p class="desc" th:if="${book.description}" th:text="${#strings.abbreviate(book.description, 100)}">...</p>
+        <p class="desc" th:text="${book.description != null ? #strings.abbreviate(book.description, 100) : ''}">...</p>
         <p th:if="${book.subscriptionRequired && user != null}"><small>Нужна подписка</small></p>
         <div th:if="${actions == 'read-fav'}" class="card-actions">
             <a th:href="@{/books/{id}/read(id=${book.bookId})}" class="btn" th:if="${!book.subscriptionRequired}">Читать</a>

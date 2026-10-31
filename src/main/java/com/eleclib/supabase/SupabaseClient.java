@@ -8,8 +8,15 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.time.Instant;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpEntity;
@@ -31,6 +38,9 @@ public class SupabaseClient {
 
     private final RestTemplate restTemplate;
     private final SupabaseProperties supabaseProperties;
+    private final HttpClient patchHttpClient = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(10))
+            .build();
     private final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .registerModule(new SimpleModule().addDeserializer(Instant.class, new LenientInstantDeserializer()))
@@ -119,13 +129,32 @@ public class SupabaseClient {
         return list.isEmpty() ? null : list.get(0);
     }
 
-    /**
-     * Java HttpURLConnection не поддерживает PATCH — PostgREST принимает POST + X-HTTP-Method-Override.
-     */
+    /** Sends a real PATCH request; POST method override can create rows on PostgREST instead. */
     private void exchangePatch(String url, String json) {
-        HttpHeaders h = headers();
-        h.set("X-HTTP-Method-Override", "PATCH");
-        restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(json, h), Void.class);
+        HttpRequest request = HttpRequest.newBuilder(URI.create(url))
+                .timeout(Duration.ofSeconds(20))
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .header("Accept", MediaType.APPLICATION_JSON_VALUE)
+                .header("apikey", supabaseProperties.getKey())
+                .header("Authorization", "Bearer " + supabaseProperties.getKey())
+                .header("Prefer", "return=representation")
+                .header("Accept-Profile", "public")
+                .header("Content-Profile", "public")
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8))
+                .build();
+        try {
+            HttpResponse<String> response = patchHttpClient.send(request,
+                    HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                throw new IllegalStateException("Supabase PATCH failed with HTTP " + response.statusCode()
+                        + ": " + response.body());
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Supabase PATCH was interrupted", e);
+        } catch (java.io.IOException e) {
+            throw new IllegalStateException("Supabase PATCH request failed", e);
+        }
     }
 
     @SneakyThrows
@@ -162,4 +191,5 @@ public class SupabaseClient {
         String url = baseUrl() + "/" + table + "?" + query;
         restTemplate.exchange(url, HttpMethod.DELETE, new HttpEntity<>(headers()), Void.class);
     }
+
 }

@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -28,6 +30,32 @@ public class BookRepository {
 
     public List<Book> findByGenre_GenreId(Long genreId) {
         return supabase.getByFilter(TABLE, "genre_id", genreId, Book.class);
+    }
+
+    /** Loads a lightweight, stable slice of the catalog without book text. */
+    public List<Book> findCatalogPage(int offset, int limit, Long genreId,
+                                      String query, List<Long> authorIds) {
+        Map<String, String> filters = new LinkedHashMap<>();
+        filters.put("select", "book_id,title,description,author_id,genre_id,cover_url,content_type");
+        filters.put("order", "book_id.asc");
+        filters.put("offset", String.valueOf(offset));
+        filters.put("limit", String.valueOf(limit));
+        if (genreId != null) {
+            filters.put("genre_id", "eq." + genreId);
+        }
+        if (query != null && !query.isBlank()) {
+            String safeQuery = query.trim().replaceAll("[(),*%]", " ").trim();
+            if (!safeQuery.isEmpty()) {
+                String titleFilter = "title.ilike.*" + safeQuery + "*";
+                if (authorIds != null && !authorIds.isEmpty()) {
+                    String ids = authorIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+                    filters.put("or", "(" + titleFilter + ",author_id.in.(" + ids + "))");
+                } else {
+                    filters.put("title", "ilike.*" + safeQuery + "*");
+                }
+            }
+        }
+        return supabase.get(TABLE, filters, Book.class);
     }
 
     public List<Book> searchByTitleOrAuthor(String query, java.util.Map<Long, String> authorFullNames) {

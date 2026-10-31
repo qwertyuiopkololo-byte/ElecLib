@@ -20,6 +20,14 @@ public class FavoriteRepository {
         return supabase.getByFilter(TABLE, "user_id", userId, Favorite.class);
     }
 
+    public List<Favorite> findByUserAndBookIds(Long userId, List<Long> bookIds) {
+        if (userId == null || bookIds == null || bookIds.isEmpty()) return List.of();
+        String ids = bookIds.stream().map(String::valueOf).collect(java.util.stream.Collectors.joining(","));
+        return supabase.get(TABLE, Map.of(
+                "user_id", "eq." + userId,
+                "book_id", "in.(" + ids + ")"), Favorite.class);
+    }
+
     public boolean existsByUser_UserIdAndBook_BookId(Long userId, Long bookId) {
         List<Favorite> list = supabase.get(TABLE, Map.of("user_id", "eq." + userId, "book_id", "eq." + bookId), Favorite.class);
         return !list.isEmpty();

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +37,26 @@ public class ContinueReadingService {
         return positions.stream()
                 .max(byUpdated)
                 .flatMap(this::toDtoIfIncomplete);
+    }
+
+    /** Последние книги с незавершённым чтением для страницы «Моя библиотека». */
+    public List<ContinueReadingDto> getInProgress(User user, int limit) {
+        if (user == null || limit <= 0) {
+            return List.of();
+        }
+        List<ReadingPosition> positions = readingPositionRepository.findByUserId(user.getUserId());
+        List<ReadingPosition> ordered = positions.stream()
+                .sorted(Comparator.comparing(ReadingPosition::getUpdatedAt,
+                        Comparator.nullsLast(Comparator.reverseOrder())))
+                .toList();
+        List<ContinueReadingDto> result = new ArrayList<>();
+        for (ReadingPosition position : ordered) {
+            toDtoIfIncomplete(position).ifPresent(result::add);
+            if (result.size() >= limit) {
+                break;
+            }
+        }
+        return List.copyOf(result);
     }
 
     private Optional<ContinueReadingDto> toDtoIfIncomplete(ReadingPosition pos) {

@@ -1,6 +1,7 @@
 package com.eleclib.service;
 
 import com.eleclib.dto.BookCardDto;
+import com.eleclib.dto.CatalogPageDto;
 import com.eleclib.dto.ReviewDto;
 import com.eleclib.model.Author;
 import com.eleclib.model.Book;
@@ -53,6 +54,23 @@ public class BookService {
     private static final double WEIGHT_FINISHED_READ = 1.0;
     private static final double WEIGHT_IN_PROGRESS = 2.0;
     private static final double RECENT_GENRE_AUTHOR_BOOST = 4.0;
+    private static final int CATALOG_PAGE_SIZE = 24;
+
+    public CatalogPageDto getCatalogPage(int page, String query, Long genreId, User currentUser) {
+        int safePage = Math.max(0, page);
+        String normalizedQuery = query == null || query.isBlank() ? null : query.trim();
+        List<Long> matchingAuthorIds = normalizedQuery == null ? List.of() : authorRepository.findAll().stream()
+                .filter(author -> author.getFullName() != null
+                        && author.getFullName().toLowerCase(Locale.ROOT).contains(normalizedQuery.toLowerCase(Locale.ROOT)))
+                .map(Author::getAuthorId)
+                .filter(Objects::nonNull)
+                .toList();
+        List<Book> fetched = bookRepository.findCatalogPage(safePage * CATALOG_PAGE_SIZE,
+                CATALOG_PAGE_SIZE + 1, genreId, normalizedQuery, matchingAuthorIds);
+        boolean hasNext = fetched.size() > CATALOG_PAGE_SIZE;
+        List<Book> visible = hasNext ? fetched.subList(0, CATALOG_PAGE_SIZE) : fetched;
+        return new CatalogPageDto(toCardDtos(visible, currentUser), safePage, hasNext);
+    }
 
     public List<BookCardDto> searchByTitleOrAuthor(String query, User currentUser) {
         if (query == null || query.isBlank()) {
@@ -313,14 +331,22 @@ public class BookService {
     }
 
     private List<BookCardDto> toCardDtos(List<Book> books, User currentUser) {
+        if (books == null || books.isEmpty()) return List.of();
         Long userId = currentUser != null ? currentUser.getUserId() : null;
         boolean hasSubscription = currentUser != null && hasSubscriptionAccess(currentUser);
         Map<Long, Author> authorMap = authorRepository.findAll().stream().collect(Collectors.toMap(Author::getAuthorId, a -> a));
         Map<Long, String> genreMap = genreRepository.findAll().stream().collect(Collectors.toMap(g -> g.getGenreId(), g -> g.getName()));
+        List<Long> bookIds = books.stream().map(Book::getBookId).filter(Objects::nonNull).toList();
+        Map<Long, List<BookRating>> ratingsByBook = bookRatingRepository.findByBookIds(bookIds).stream()
+                .collect(Collectors.groupingBy(BookRating::getBookId));
+        Set<Long> favoriteBookIds = userId == null ? Set.of() : favoriteRepository.findByUserAndBookIds(userId, bookIds).stream()
+                .map(com.eleclib.model.Favorite::getBookId).collect(Collectors.toSet());
         return books.stream().map(b -> {
-            double avg = getAverageRating(b.getBookId());
-            int count = bookRatingRepository.findByBook_BookId(b.getBookId()).size();
-            boolean inFav = userId != null && favoriteRepository.existsByUser_UserIdAndBook_BookId(userId, b.getBookId());
+            List<BookRating> ratings = ratingsByBook.getOrDefault(b.getBookId(), List.of());
+            double avg = ratings.stream().map(BookRating::getRating).filter(Objects::nonNull)
+                    .mapToInt(Integer::intValue).average().orElse(0);
+            int count = ratings.size();
+            boolean inFav = userId != null && favoriteBookIds.contains(b.getBookId());
             Author author = b.getAuthorId() != null ? authorMap.get(b.getAuthorId()) : null;
             String genreName = b.getGenreId() != null ? genreMap.get(b.getGenreId()) : null;
             return BookCardDto.builder()
