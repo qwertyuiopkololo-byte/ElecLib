@@ -20,6 +20,7 @@
             <button type="button" class="btn small" id="btnGo">Перейти</button>
             <button type="button" class="btn small" id="btnNext">Следующая →</button>
             <button type="button" class="btn small" id="btnToggleToc" title="Оглавление книги">Оглавление</button>
+            <button type="button" class="btn small" id="btnToggleSearch" title="Поиск по тексту книги">Найти в книге</button>
             <button type="button" class="btn small" id="btnToggleBookmarks" title="Показать/скрыть закладки">Закладки</button>
             <button type="button" class="btn small" id="btnToggleNotes" title="Показать/скрыть заметки">Заметки</button>
             <button type="button" class="btn small" id="btnToggleReaderSettings" title="Настройки оформления">Оформление</button>
@@ -34,6 +35,17 @@
                 <button type="submit" class="btn small">В избранное</button>
             </form>
         </div>
+
+        <section class="reader-search reader-search-panel" id="readerSearch" aria-hidden="true" hidden aria-labelledby="readerSearchTitle">
+            <h3 id="readerSearchTitle">Поиск по тексту книги</h3>
+            <form id="readerSearchForm" class="reader-search-form" role="search">
+                <label class="visually-hidden" for="readerSearchInput">Введите слово или фразу</label>
+                <input id="readerSearchInput" type="search" placeholder="Введите слово или фразу" autocomplete="off" />
+                <button type="submit" class="btn small">Найти</button>
+            </form>
+            <p id="readerSearchStatus" class="reader-search-status" aria-live="polite"></p>
+            <ol id="readerSearchResults" class="reader-search-results"></ol>
+        </section>
 
         <div class="reader-toc reader-toc-panel" id="readerToc" aria-hidden="true">
             <h3>Оглавление</h3>
@@ -518,11 +530,15 @@
             var panel = document.getElementById(panelId);
             if (!panel) return;
             var shouldOpen = panel.getAttribute('aria-hidden') === 'true';
-            ['readerToc', 'readerBookmarks', 'readerNotes', 'readerSettings'].forEach(function(id) {
+            ['readerToc', 'readerSearch', 'readerBookmarks', 'readerNotes', 'readerSettings'].forEach(function(id) {
                 var candidate = document.getElementById(id);
-                if (candidate) candidate.setAttribute('aria-hidden', 'true');
+                if (candidate) {
+                    candidate.setAttribute('aria-hidden', 'true');
+                    candidate.hidden = true;
+                }
             });
             panel.setAttribute('aria-hidden', shouldOpen ? 'false' : 'true');
+            panel.hidden = !shouldOpen;
         }
         document.getElementById('btnToggleReaderSettings').onclick = function() {
             toggleReaderPanel('readerSettings');
@@ -563,6 +579,60 @@
         document.getElementById('btnToggleToc').onclick = function() {
             toggleReaderPanel('readerToc');
         };
+        document.getElementById('btnToggleSearch').onclick = function() {
+            toggleReaderPanel('readerSearch');
+            if (document.getElementById('readerSearch').getAttribute('aria-hidden') === 'false') {
+                document.getElementById('readerSearchInput').focus();
+            }
+        };
+        document.getElementById('readerSearchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var query = document.getElementById('readerSearchInput').value.trim();
+            var results = document.getElementById('readerSearchResults');
+            var status = document.getElementById('readerSearchStatus');
+            results.innerHTML = '';
+            if (!query) {
+                status.textContent = 'Введите слово или фразу для поиска.';
+                return;
+            }
+            var normalizedText = fullText.toLocaleLowerCase('ru');
+            var normalizedQuery = query.toLocaleLowerCase('ru');
+            var matches = [];
+            var offset = 0;
+            while (matches.length < 200) {
+                var matchAt = normalizedText.indexOf(normalizedQuery, offset);
+                if (matchAt < 0) break;
+                var page = pageForCharOffset(pages, matchAt);
+                var snippetStart = Math.max(0, matchAt - 55);
+                var snippetEnd = Math.min(fullText.length, matchAt + query.length + 75);
+                var snippet = fullText.slice(snippetStart, snippetEnd).replace(/\s+/g, ' ').trim();
+                matches.push({ page: page, snippet: (snippetStart > 0 ? '…' : '') + snippet + (snippetEnd < fullText.length ? '…' : '') });
+                offset = matchAt + Math.max(1, normalizedQuery.length);
+            }
+            if (!matches.length) {
+                status.textContent = 'Совпадений не найдено.';
+                return;
+            }
+            status.textContent = 'Найдено совпадений: ' + matches.length + (matches.length === 200 ? ' (показаны первые 200).' : '.');
+            matches.forEach(function(match) {
+                var item = document.createElement('li');
+                item.className = 'reader-search-result';
+                var jump = document.createElement('button');
+                jump.type = 'button';
+                jump.className = 'reader-search-result-link';
+                jump.textContent = 'Стр. ' + match.page;
+                jump.addEventListener('click', function() {
+                    goToPage(match.page);
+                    document.getElementById('readerSearch').setAttribute('aria-hidden', 'true');
+                    document.getElementById('readerSearch').hidden = true;
+                });
+                var excerpt = document.createElement('span');
+                excerpt.textContent = match.snippet;
+                item.appendChild(jump);
+                item.appendChild(excerpt);
+                results.appendChild(item);
+            });
+        });
         document.getElementById('tocList').addEventListener('click', function(e) {
             if (e.target.classList.contains('toc-go')) {
                 var li = e.target.closest('.toc-item');
