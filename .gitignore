@@ -4,6 +4,12 @@ target/
 ### Local Hallmark backups, preview tools and captures ###
 .hallmark/
 
+### Local project notes and IDE settings ###
+CONTEXT.md
+design.md
+.idea/
+docs/homepage-screenshot.jpg
+
 ### Comic PDF uploads ###
 data/comics/
 
