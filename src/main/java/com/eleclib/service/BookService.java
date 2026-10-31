@@ -190,6 +190,7 @@ public class BookService {
                 .map(br -> {
                     User u = userMap.get(br.getUserId());
                     return ReviewDto.builder()
+                            .userId(br.getUserId())
                             .userFullName(u != null ? u.getFullName() : "?")
                             .rating(br.getRating())
                             .review(br.getReview())

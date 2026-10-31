@@ -568,3 +568,38 @@ body.reader-page :is(.reader-toc, .reader-bookmarks, .reader-notes, .reader-sett
 .book-reading-progress-label { display: flex; align-items: center; justify-content: space-between; gap: var(--space-xs); margin-bottom: .35rem; font-variant-numeric: tabular-nums; }
 .book-reading-progress-track { height: 5px; overflow: hidden; border-radius: 99px; background: var(--color-paper-3); }
 .book-reading-progress-track span { display: block; height: 100%; border-radius: inherit; background: var(--color-accent); }
+
+.profile-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; max-width: 1000px; }
+.profile-panel { padding: 1.5rem; border: 1px solid var(--color-rule); border-radius: 6px; min-width: 0; }
+.profile-panel h2 { margin-top: 0; }
+.profile-form { display: flex; flex-direction: column; gap: .65rem; margin-bottom: 1rem; }
+.profile-form input { width: 100%; min-width: 0; box-sizing: border-box; }
+.profile-form .btn { align-self: flex-start; }
+.profile-avatar { border-radius: 50%; object-fit: cover; margin-bottom: 1rem; }
+.profile-avatar-placeholder { display: grid; place-items: center; width: 128px; height: 128px; font-size: 3rem; background: var(--color-paper-2); text-transform: uppercase; }
+.profile-links { display: flex; flex-wrap: wrap; gap: .75rem; }
+.profile-error { color: var(--color-error); }
+@media (max-width: 700px) { .profile-grid { grid-template-columns: 1fr; } }
+.profile-reading-column { display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; align-self: start; }
+.user-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.user-avatar[hidden] { display: none !important; }
+.avatar-fallback { display: inline-flex; align-items: center; justify-content: center; background: var(--color-paper-2); color: var(--color-accent); text-transform: uppercase; font-weight: 600; }
+.review-author { display: inline-flex; align-items: center; gap: .65rem; vertical-align: middle; }
+.user-avatar-wrap { display: inline-flex; }
+.header nav .header-avatar { display: inline-flex; padding: 0; margin-left: .5rem; border-radius: 50%; align-items: center; }
+/* Keep avatars independent of general image sizing. */
+.header nav a.header-avatar, .review-author .user-avatar-wrap { flex: 0 0 auto; width: 36px; height: 36px; overflow: hidden; }
+.header nav a.header-avatar { width: 32px; height: 32px; }
+.header nav a.header-avatar .user-avatar { display: block; width: 32px !important; height: 32px !important; min-width: 32px; max-width: 32px !important; max-height: 32px; object-fit: cover; }
+.reviews .review-author .user-avatar { width: 36px !important; height: 36px !important; min-width: 36px; max-width: 36px !important; max-height: 36px; object-fit: cover; }
+.header nav a.header-avatar .avatar-fallback, .reviews .review-author .avatar-fallback { display: inline-flex; }
+.header nav a.header-avatar .user-avatar[hidden], .reviews .review-author .user-avatar[hidden] { display: none !important; }
+.header nav a.header-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; }
+.header nav a.header-avatar .user-avatar { width: 40px !important; height: 40px !important; min-width: 40px; max-width: 40px !important; max-height: 40px; border-radius: 50% !important; }
+.review-author .user-avatar-wrap { width: 44px; height: 44px; border-radius: 50%; overflow: hidden; }
+.reviews .review-author .user-avatar { width: 44px !important; height: 44px !important; min-width: 44px; max-width: 44px !important; max-height: 44px; border-radius: 50% !important; }
+.avatar-fallback svg { width: 24px; height: 24px; }
+.profile-logout { display: flex; justify-content: flex-end; margin: 0; }
+.profile-page .profile-reading-column { display: flex !important; flex-direction: column; gap: 20px !important; }
+.profile-page .profile-reading-column > .profile-panel { margin: 0; }
+.profile-page .profile-reading-column > .profile-logout { margin: 0; display: flex !important; justify-content: flex-end; }

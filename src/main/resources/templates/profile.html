@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Мой профиль — ElecLib</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<body class="profile-page">
+<div th:replace="~{fragments/header}"></div>
+<main class="main">
+    <h1>Мой профиль</h1>
+    <p th:if="${success}" role="status" th:text="${success}"></p>
+    <p th:if="${error}" role="alert" class="profile-error" th:text="${error}"></p>
+    <div class="profile-grid">
+        <section class="profile-panel">
+            <h2>Личные данные</h2>
+            <p>Логин: <strong th:text="${profile.login}"></strong></p>
+            <form th:action="@{/profile/details}" method="post" class="profile-form">
+                <label for="firstName">Имя</label><input id="firstName" name="firstName" th:value="${profile.firstName}" required maxlength="100" autocomplete="given-name"/>
+                <label for="lastName">Фамилия</label><input id="lastName" name="lastName" th:value="${profile.lastName}" required maxlength="100" autocomplete="family-name"/>
+                <button class="btn" type="submit">Сохранить изменения</button>
+            </form>
+        </section>
+        <section class="profile-panel">
+            <h2>Аватар</h2>
+            <img th:if="${hasAvatar}" th:src="@{/profile/avatar}" class="profile-avatar" alt="Ваш аватар" width="128" height="128"/>
+            <div th:unless="${hasAvatar}" class="profile-avatar profile-avatar-placeholder" aria-label="Аватар не установлен"><svg viewBox="0 0 24 24" width="60" height="60" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></div>
+            <form th:action="@{/profile/avatar}" method="post" enctype="multipart/form-data" class="profile-form">
+                <label for="avatar">Выберите изображение PNG или JPEG, до 1 МБ</label>
+                <button type="button" class="btn" onclick="document.getElementById('avatar').click()">Выбрать аватар</button><input hidden style="display:none" id="avatar" type="file" name="avatar" accept="image/png,image/jpeg" required onchange="if (this.files.length) this.form.requestSubmit()"/>
+                <noscript><button type="submit" class="btn">Загрузить аватар</button></noscript>
+            </form>
+            <form th:if="${hasAvatar}" th:action="@{/profile/avatar/delete}" method="post"><button class="btn danger" type="submit">Удалить аватар</button></form>
+        </section>
+        <section class="profile-panel">
+            <h2>Смена пароля</h2>
+            <form th:action="@{/profile/password}" method="post" class="profile-form">
+                <label for="oldPassword">Текущий пароль</label><input id="oldPassword" name="oldPassword" type="password" autocomplete="current-password" required/>
+                <label for="newPassword">Новый пароль</label><input id="newPassword" name="newPassword" type="password" autocomplete="new-password" minlength="8" required/>
+                
+                <label for="confirmPassword">Повторите новый пароль</label><input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" required/>
+                <button type="submit" class="btn">Изменить пароль</button>
+            </form>
+        </section>
+        <div class="profile-reading-column"><section class="profile-panel"><h2>Ваше чтение</h2><p>Продолжайте книги и следите за своими результатами.</p><div class="profile-links"><a th:href="@{/my-library}" class="btn secondary">Моя библиотека</a><a th:href="@{/reading/stats}" class="btn secondary">Статистика чтения</a></div></section>
+<section class="profile-panel"><h2>Подписка</h2>
+<p th:text="${hasSubscription ? 'Подписка активна' : 'Нет активной подписки'}"></p>
+<th:block th:each="s : ${subscriptions}"><p th:if="${s.active}">Действует до <strong th:text="${s.endDate}"></strong></p></th:block>
+<a th:unless="${hasSubscription}" th:href="@{/subscription}" class="btn">Оформить подписку</a>
+</section><form th:action="@{/logout}" method="post" class="profile-logout"><button type="submit" class="btn danger">Выйти</button></form></div>
+    </div>
+</main>
+<div th:replace="~{fragments/footer}"></div>
+</body></html>

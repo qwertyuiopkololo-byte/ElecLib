@@ -8,6 +8,7 @@ import java.time.Instant;
 @Data
 @Builder
 public class ReviewDto {
+    private Long userId;
     private String userFullName;
     private Integer rating;
     private String review;
