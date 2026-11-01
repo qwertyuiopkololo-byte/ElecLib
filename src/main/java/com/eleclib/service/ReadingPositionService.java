@@ -16,6 +16,7 @@ public class ReadingPositionService {
     private final ReadingPositionRepository repository;
     private final BookService bookService;
     private final ReadingShelfService readingShelfService;
+    private final MonthlyGoalService monthlyGoalService;
 
     public int getLastPage(Long userId, Long bookId) {
         return repository.findByUserIdAndBookId(userId, bookId)
@@ -51,6 +52,10 @@ public class ReadingPositionService {
                 .build());
         if (totalPages != null) {
             readingShelfService.updateReadingSystemShelf(userId, bookId, savedPage >= totalPages);
+            if (savedPage >= totalPages) {
+                try { monthlyGoalService.recordFinished(userId, bookId); }
+                catch (java.io.IOException e) { throw new java.io.UncheckedIOException("Не удалось сохранить результат цели", e); }
+            }
         }
     }
 }

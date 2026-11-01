@@ -10,6 +10,24 @@
 <div th:replace="~{fragments/header}"></div>
 <main class="main">
     <h1>Статистика чтения</h1>
+    <section class="monthly-goal">
+        <h2>Ежемесячная цель</h2>
+        <p th:text="${goal.month}"></p>
+        <p th:if="${goalMessage}" role="status" th:text="${goalMessage}"></p>
+        <p th:if="${goalError}" role="alert" th:text="${goalError}"></p>
+        <th:block th:if="${goal.target > 0}">
+            <p><strong th:text="${goal.finished}"></strong> из <strong th:text="${goal.target}"></strong> книг прочитано</p>
+            <progress th:value="${goal.percent}" max="100" aria-label="Прогресс ежемесячной цели"></progress>
+            <p th:if="${goal.finished >= goal.target}">Цель выполнена! Можно поставить новую планку.</p>
+        </th:block>
+        <p th:unless="${goal.target > 0}">Сколько книг хотите прочитать в этом месяце?</p>
+        <form th:action="@{/reading/goal}" method="post" class="monthly-goal-form">
+            <label for="goalTarget">Книг за месяц</label>
+            <input id="goalTarget" type="number" name="target" min="1" max="100" required th:value="${goal.target > 0 ? goal.target : 3}"/>
+            <button type="submit" class="btn" th:text="${goal.target > 0 ? 'Изменить цель' : 'Установить цель'}"></button>
+        </form>
+        <p class="stats-hint">Книга засчитывается при открытии последней страницы, один раз за месяц. Учёт начат с добавления целей; прежние завершения не включены.</p>
+    </section>
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-value" th:text="${stats.booksStarted}">0</div>

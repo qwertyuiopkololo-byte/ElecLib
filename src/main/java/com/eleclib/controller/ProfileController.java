@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.nio.file.*;
+
 import java.util.Map;
 import java.nio.charset.StandardCharsets;
 
@@ -27,7 +27,7 @@ public class ProfileController {
     private final com.eleclib.service.SubscriptionService subscriptionService;
     private final SupabaseClient supabase;
     private final PasswordEncoder passwordEncoder;
-    private final Path avatarDirectory = Path.of("data", "avatars");
+    private final com.eleclib.service.AvatarStorageService avatarStorage;
 
     @GetMapping
     public String profile(Model model) {
@@ -36,7 +36,12 @@ public class ProfileController {
         model.addAttribute("profile", user);
         model.addAttribute("hasSubscription", subscriptionService.hasActiveSubscription(user));
         model.addAttribute("subscriptions", subscriptionService.getUserSubscriptions(user.getUserId()));
-        model.addAttribute("hasAvatar", Files.isRegularFile(avatarPath(user)));
+        try {
+            model.addAttribute("hasAvatar", avatarStorage.read(user.getUserId()) != null);
+        } catch (org.springframework.web.client.RestClientException e) {
+            model.addAttribute("hasAvatar", false);
+            model.addAttribute("error", "Хранилище аватаров Supabase недоступно. Проверьте настройку Storage.");
+        }
         return "profile";
     }
 
@@ -85,15 +90,15 @@ public class ProfileController {
         return "redirect:/profile";
     }
 
-    private Path avatarPath(User user) { return avatarDirectory.resolve(user.getUserId() + ".png"); }
-
     @GetMapping("/avatar")
     @ResponseBody
     public ResponseEntity<byte[]> avatar() throws java.io.IOException {
         User user = userService.getCurrentUser();
-        if (user == null || !Files.isRegularFile(avatarPath(user))) return ResponseEntity.notFound().build();
+        if (user == null) return ResponseEntity.notFound().build();
+        byte[] image = avatarStorage.read(user.getUserId());
+        if (image == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok().cacheControl(CacheControl.noStore()).contentType(MediaType.IMAGE_PNG)
-                .body(Files.readAllBytes(avatarPath(user)));
+                .body(image);
     }
 
     @PostMapping("/avatar")
@@ -122,12 +127,9 @@ public class ProfileController {
                 graphics.drawImage(image, 0, 0, 256, 256, (image.getWidth()-size)/2, (image.getHeight()-size)/2,
                         (image.getWidth()+size)/2, (image.getHeight()+size)/2, null);
             } finally { graphics.dispose(); }
-            Files.createDirectories(avatarDirectory);
-            Path temp = Files.createTempFile(avatarDirectory, "avatar-", ".png");
-            try {
-                ImageIO.write(resized, "png", temp.toFile());
-                Files.move(temp, avatarPath(user), StandardCopyOption.REPLACE_EXISTING);
-            } finally { Files.deleteIfExists(temp); }
+            var output = new java.io.ByteArrayOutputStream();
+            ImageIO.write(resized, "png", output);
+            avatarStorage.upload(user.getUserId(), output.toByteArray());
             flash.addFlashAttribute("success", "Аватар сохранён.");
         } catch (Exception e) {
             flash.addFlashAttribute("error", "Выберите изображение PNG или JPEG до 1 МБ и 16 миллионов пикселей.");
@@ -140,10 +142,11 @@ public class ProfileController {
         User user = userService.getCurrentUser();
         if (user == null) return "redirect:/login";
         try {
-            Files.deleteIfExists(avatarPath(user));
+            avatarStorage.delete(user.getUserId());
             flash.addFlashAttribute("success", "Аватар удалён.");
         } catch (Exception e) { flash.addFlashAttribute("error", "Не удалось удалить аватар."); }
         return "redirect:/profile";
     }
 }
+
 

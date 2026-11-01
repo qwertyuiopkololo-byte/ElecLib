@@ -79,6 +79,25 @@ public class SupabaseClient {
         return get(table, null, type);
     }
 
+    public void upsert(String table, Map<String, Object> body, String conflictColumns, boolean ignoreDuplicates) {
+        HttpHeaders h = headers();
+        h.set("Prefer", "return=minimal,resolution=" + (ignoreDuplicates ? "ignore" : "merge") + "-duplicates");
+        restTemplate.exchange(baseUrl() + "/" + table + "?on_conflict=" + conflictColumns,
+                HttpMethod.POST, new HttpEntity<>(body, h), Void.class);
+    }
+
+    public long count(String table, Map<String, String> filters) {
+        var builder = UriComponentsBuilder.fromHttpUrl(baseUrl() + "/" + table);
+        filters.forEach((key, value) -> builder.queryParam(key, value));
+        HttpHeaders h = headers();
+        h.set("Prefer", "count=exact");
+        h.set("Range", "0-0");
+        String range = restTemplate.exchange(builder.build().toUriString(), HttpMethod.HEAD,
+                new HttpEntity<>(h), Void.class).getHeaders().getFirst("Content-Range");
+        if (range == null || !range.matches(".*/\\d+")) throw new IllegalStateException("Supabase did not return a count");
+        return Long.parseLong(range.substring(range.lastIndexOf('/') + 1));
+    }
+
     public <T> List<T> getByFilter(String table, String column, String value, Class<T> type) {
         return get(table, Map.of(column, "eq." + value), type);
     }
