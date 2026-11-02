@@ -61,9 +61,6 @@ class BookServiceRecommendationTest {
                 Genre.builder().genreId(21L).name("G21").build(),
                 Genre.builder().genreId(99L).name("G99").build()
         ));
-        when(bookRatingRepository.getAverageRatingByBookId(anyLong())).thenReturn(null);
-        when(bookRatingRepository.findByBook_BookId(anyLong())).thenReturn(List.of());
-        when(favoriteRepository.existsByUser_UserIdAndBook_BookId(anyLong(), anyLong())).thenReturn(false);
     }
 
     @Test
